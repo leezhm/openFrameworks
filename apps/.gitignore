@@ -1,3 +1,4 @@
+# ignore bin folders' contents, except data folder therein
 # devApps is the only official directory
 !devApps/
 
@@ -16,3 +17,16 @@
 
 # ignore backup file
 *.rar
+
+# ignore bin folders' contents, except data folder therein
+!/OfxkinectNUI/
+
+/OfxKinectNUI/*/bin/*
+/OfxKinectNUI/*/obj/
+/OfxKinectNUI/*/ipch/
+
+/OfxKinectNUI/*/data/*
+
+/OfxKinectNUI/*/.cproject
+/OfxKinectNUI/*/.project
+/OfxKinectNUI/*/.settubgs/
