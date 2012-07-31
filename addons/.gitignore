@@ -23,6 +23,8 @@ ofxAndroid/ofAndroidLib/gen
 # So do not ignore the following folders.
 !ofxKinectNui
 
+# Ignore all libs in ofxOpenCv
+ofxOpenCv/libs/opencv/dll/*
 
 # don't ignore the .gitignore file
 !.gitignore
