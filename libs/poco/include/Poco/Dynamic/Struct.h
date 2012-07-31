@@ -1,7 +1,7 @@
 //
 // Struct.h
 //
-// $Id: //poco/Main/Foundation/include/Poco/Struct.h#9 $
+// $Id: //poco/Main/Foundation/include/Poco/Dynamic/Struct.h#9 $
 //
 // Library: Foundation
 // Package: Dynamic
@@ -69,9 +69,19 @@ public:
 	{
 	}
 
-	Struct(const Data &val): _data(val)
+	Struct(const Data& val): _data(val)
 		/// Creates the Struct from the given value.
 	{
+	}
+
+	template <typename T>
+	Struct(const std::map<K, T>& val)
+	{
+		typedef typename std::map<K, T>::const_iterator MapConstIterator;
+
+		MapConstIterator it = val.begin();
+		MapConstIterator end = val.end();
+		for (; it != end; ++it) _data.insert(ValueType(it->first, Var(it->second)));
 	}
 
 	virtual ~Struct()
@@ -145,7 +155,9 @@ public:
 		/// when already another element was present, in this case Iterator
 		/// points to that other element)
 	{
-		return insert(std::make_pair(key, value));
+		// fix: SunPro C++ is silly ...
+		ValueType valueType(key,value);
+		return insert(valueType);
 	}
 
 	inline InsRetVal insert(const ValueType& aPair)
@@ -276,9 +288,6 @@ public:
 
 	void convert(std::string& val) const
 	{
-		// Serialize in JSON format: equals an object
-
-		// JSON format definition: { string ':' value } string:value pair n-times, sep. by ','
 		val.append("{ ");
 		Struct<std::string>::ConstIterator it = _val.begin();
 		Struct<std::string>::ConstIterator itEnd = _val.end();
@@ -450,9 +459,6 @@ public:
 
 	void convert(std::string& val) const
 	{
-		// Serialize in JSON format: equals an object
-
-		// JSON format definition: { string ':' value } string:value pair n-times, sep. by ','
 		val.append("{ ");
 		Struct<int>::ConstIterator it = _val.begin();
 		Struct<int>::ConstIterator itEnd = _val.end();

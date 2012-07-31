@@ -1,4 +1,4 @@
-//
+﻿//
 // Var.h
 //
 // $Id: //poco/svn/Foundation/include/Poco/Var.h#2 $
@@ -52,7 +52,6 @@ namespace Dynamic {
 
 template <typename T>
 class Struct;
-
 
 class Foundation_API Var
 	/// Var allows to store data of different types and to convert between these types transparently.

@@ -1,7 +1,7 @@
 //
 // Data.h
 //
-// $Id: //poco/1.4/Data/include/Poco/Data/Data.h#1 $
+// $Id: //poco/Main/Data/include/Poco/Data/Data.h#4 $
 //
 // Library: Data
 // Package: DataCore
@@ -72,7 +72,19 @@
 //
 #if defined(_MSC_VER)
 	#if !defined(POCO_NO_AUTOMATIC_LIBS) && !defined(Data_EXPORTS)
-		#pragma comment(lib, "PocoData" POCO_LIB_SUFFIX)
+		#if defined(POCO_DLL)
+			#if defined(_DEBUG)
+				#pragma comment(lib, "PocoDatad.lib")
+			#else
+				#pragma comment(lib, "PocoData.lib")
+			#endif
+		#else
+			#if defined(_DEBUG)
+				#pragma comment(lib, "PocoDatamtd.lib")
+			#else
+				#pragma comment(lib, "PocoDatamt.lib")
+			#endif
+		#endif
 	#endif
 #endif
 

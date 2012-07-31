@@ -45,6 +45,10 @@
 
 
 namespace Poco {
+
+class BinaryReader;
+class BinaryWriter;
+
 namespace Net {
 
 
@@ -115,6 +119,18 @@ public:
 		/// passed. Additionally, for an IPv6 address, a scope ID
 		/// may be specified. The scope ID will be ignored if an IPv4
 		/// address is specified.
+
+	IPAddress(unsigned prefix, Family family);
+			/// Creates an IPAddress mask with the given length of prefix.
+
+#if defined(_WIN32)
+	IPAddress(const SOCKET_ADDRESS& socket_address);
+			/// Creates an IPAddress from Windows SOCKET_ADDRESS structure.
+#endif
+
+	IPAddress(const struct sockaddr& sockaddr);
+		/// Same for struct sock_addr on POSIX.
+
 
 	~IPAddress();
 		/// Destroys the IPAddress.
@@ -296,6 +312,10 @@ public:
 	bool operator <= (const IPAddress& addr) const;
 	bool operator >  (const IPAddress& addr) const;
 	bool operator >= (const IPAddress& addr) const;
+	IPAddress operator & (const IPAddress& addr) const;
+	IPAddress operator | (const IPAddress& addr) const;
+	IPAddress operator ^ (const IPAddress& addr) const;
+	IPAddress operator ~ () const;
 		
 	poco_socklen_t length() const;
 		/// Returns the length in bytes of the internal socket address structure.	
@@ -305,6 +325,9 @@ public:
 		
 	int af() const;
 		/// Returns the address family (AF_INET or AF_INET6) of the address.
+
+	unsigned prefixLength() const;
+		/// Returns the prefix length.
 		
 	void mask(const IPAddress& mask);
 		/// Masks the IP address using the given netmask, which is usually
@@ -373,6 +396,9 @@ inline void swap(IPAddress& addr1, IPAddress& addr2)
 	addr1.swap(addr2);
 }
 
+
+BinaryWriter& operator << (BinaryWriter& writer, const IPAddress& value);
+BinaryReader& operator >> (BinaryReader& reader, IPAddress& value);
 
 } } // namespace Poco::Net
 

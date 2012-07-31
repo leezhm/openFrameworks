@@ -1,7 +1,7 @@
 //
 // AbstractBinding.h
 //
-// $Id: //poco/1.4/Data/include/Poco/Data/AbstractBinding.h#1 $
+// $Id: //poco/Main/Data/include/Poco/Data/AbstractBinding.h#6 $
 //
 // Library: Data
 // Package: DataCore
@@ -41,10 +41,13 @@
 
 
 #include "Poco/Data/Data.h"
+#include "Poco/Data/AbstractBinder.h"
 #include "Poco/Any.h"
 #include "Poco/RefCountedObject.h"
 #include "Poco/AutoPtr.h"
 #include <vector>
+#include <list>
+#include <deque>
 #include <cstddef>
 
 
@@ -52,14 +55,18 @@ namespace Poco {
 namespace Data {
 
 
-class AbstractBinder;
-
-
 class Data_API AbstractBinding: public Poco::RefCountedObject
 	/// AbstractBinding connects a value with a placeholder via an AbstractBinder interface.
 {
 public:
-	AbstractBinding();
+	enum Direction
+	{
+		PD_IN = AbstractBinder::PD_IN,
+		PD_OUT = AbstractBinder::PD_OUT,
+		PD_IN_OUT = AbstractBinder::PD_IN_OUT
+	};
+
+	AbstractBinding(const std::string& name = "", Direction direction = PD_IN, Poco::UInt32 bulkSize = 0);
 		/// Creates the AbstractBinding.
 
 	virtual ~AbstractBinding();
@@ -81,7 +88,7 @@ public:
 		/// Returns the number of rows that the binding handles.
 		///
 		/// The trivial case will be one single row but 
-		/// for collection data types (ie vector) it can be larger.
+		/// for collection data types it can be larger.
 
 	virtual bool canBind() const = 0;
 		/// Returns true if we have enough data to bind
@@ -92,27 +99,62 @@ public:
 	virtual void reset() = 0;
 		/// Allows a binding to be reused.
 
+	AbstractBinder::Direction getDirection() const;
+		/// Returns the binding direction.
+
+	const std::string& name() const;
+		/// Returns the name for this binding.
+
+	bool isBulk() const;
+		/// Returns true if extraction is bulk.
+
+	Poco::UInt32 bulkSize() const;
+		/// Returns the size of the bulk binding.
+
 private:
 	AbstractBinder* _pBinder;
+	std::string     _name;
+	Direction       _direction;
+	Poco::UInt32    _bulkSize;
 };
 
 
 typedef Poco::AutoPtr<AbstractBinding> AbstractBindingPtr;
 typedef std::vector<AbstractBindingPtr> AbstractBindingVec;
+typedef std::deque<AbstractBindingPtr> AbstractBindingDeq;
+typedef std::list<AbstractBindingPtr> AbstractBindingLst;
 
 
 //
 // inlines
 //
-inline void AbstractBinding::setBinder(AbstractBinder* pBinder)
-{
-	_pBinder = pBinder;
-}
-
-
 inline AbstractBinder* AbstractBinding::getBinder() const
 {
 	return _pBinder;
+}
+
+
+inline const std::string& AbstractBinding::name() const
+{
+	return _name;
+}
+
+
+inline AbstractBinder::Direction AbstractBinding::getDirection() const
+{
+	return (AbstractBinder::Direction) _direction;
+}
+
+
+inline bool AbstractBinding::isBulk() const
+{
+	return _bulkSize > 0;
+}
+
+
+inline Poco::UInt32 AbstractBinding::bulkSize() const
+{
+	return _bulkSize;
 }
 
 

@@ -1,7 +1,7 @@
 //
 // SessionFactory.h
 //
-// $Id: //poco/1.4/Data/include/Poco/Data/SessionFactory.h#1 $
+// $Id: //poco/Main/Data/include/Poco/Data/SessionFactory.h#7 $
 //
 // Library: Data
 // Package: DataCore
@@ -71,17 +71,11 @@ class Data_API SessionFactory
 	///      Session ses("SQLite", "dummy.db");
 {
 public:
-	SessionFactory();
-		/// Creates the SessionFactory.
-		
-	~SessionFactory();
-		/// Destroys the SessionFactory.
-
 	static SessionFactory& instance();
 		/// returns the static instance of the singleton.
 
-	void add(const std::string& key, Connector* pIn);
-		/// Registers a Connector under the given key at the factory. If a registration for that
+	void add(Connector* pIn);
+		/// Registers a Connector under its key at the factory. If a registration for that
 		/// key is already active, the first registration will be kept, only its reference count will be increased.
 		/// Always takes ownership of parameter pIn.
 
@@ -89,11 +83,20 @@ public:
 		/// Lowers the reference count for the Connector registered under that key. If the count reaches zero,
 		/// the object is removed.
 
-	Session create(const std::string& key, const std::string& connectionString);
+	Session create(const std::string& key,
+		const std::string& connectionString,
+		std::size_t timeout = Session::LOGIN_TIMEOUT_DEFAULT);
 		/// Creates a Session for the given key with the connectionString. Throws an Poco:Data::UnknownDataBaseException
 		/// if no Connector is registered for that key.
 
+	Session create(const std::string& uri,
+		std::size_t timeout = Session::LOGIN_TIMEOUT_DEFAULT);
+		/// Creates a Session for the given URI (must be in key:///connectionString format). 
+		///	Throws an Poco:Data::UnknownDataBaseException if no Connector is registered for the key.
+
 private:
+	SessionFactory();
+	~SessionFactory();
 	SessionFactory(const SessionFactory&);
 	SessionFactory& operator = (const SessionFactory&);
 

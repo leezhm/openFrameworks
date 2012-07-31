@@ -65,6 +65,9 @@ namespace Dynamic {
 class Var;
 
 
+bool Foundation_API isJSONString(const Var& any);
+	/// Returns true for values that should be JSON-formatted as string.
+
 void Foundation_API appendJSONString(std::string& val, const Var& any);
 	/// Converts the any to a JSON value and adds it to val
 
@@ -209,11 +212,16 @@ protected:
 		poco_static_assert (std::numeric_limits<T>::is_signed);
 
 		if (std::numeric_limits<F>::is_integer)
+		{
 			checkUpperLimit<F,T>(from); 
+			checkLowerLimit<F,T>(from);
+		}
 		else
+		{
 			checkUpperLimitFloat<F,T>(from); 
-
-		checkLowerLimit<F,T>(from);
+			checkLowerLimitFloat<F,T>(from); 
+		}
+		
 		to = static_cast<T>(from);
 	}
 
@@ -308,6 +316,13 @@ private:
 	{
 		if (from > std::numeric_limits<T>::max())
 			throw RangeException("Value too large.");
+	}
+
+	template <typename F, typename T>
+	void checkLowerLimitFloat(const F& from) const
+	{
+		if (from < -std::numeric_limits<T>::max()) 
+			throw RangeException("Value too small.");
 	}
 
 	template <typename F, typename T>

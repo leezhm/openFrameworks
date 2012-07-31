@@ -1,7 +1,7 @@
 //
 // PooledSessionImpl.h
 //
-// $Id: //poco/1.4/Data/include/Poco/Data/PooledSessionImpl.h#1 $
+// $Id: //poco/Main/Data/include/Poco/Data/PooledSessionImpl.h#3 $
 //
 // Library: Data
 // Package: SessionPooling
@@ -70,9 +70,18 @@ public:
 	void begin();
 	void commit();
 	void rollback();
+	void open(const std::string& connect = "");
 	void close();
 	bool isConnected();
+	void setConnectionTimeout(std::size_t timeout);
+	std::size_t getConnectionTimeout();
+	bool canTransact();
 	bool isTransaction();
+	void setTransactionIsolation(Poco::UInt32);
+	Poco::UInt32 getTransactionIsolation();
+	bool hasTransactionIsolation(Poco::UInt32);
+	bool isTransactionIsolation(Poco::UInt32);
+	const std::string& connectorName();
 	void setFeature(const std::string& name, bool state);	
 	bool getFeature(const std::string& name);
 	void setProperty(const std::string& name, const Poco::Any& value);
