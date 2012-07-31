@@ -6,7 +6,7 @@ echo loading variables
 
 set OLDDIR=%CD%
 
-call "C:\Program Files\Microsoft Visual Studio 10.0\VC\vcvarsall.bat"
+call "C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat"
 
 for /d %%X in (..\..\examples\*) do ( 
 
