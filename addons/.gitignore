@@ -18,5 +18,11 @@ ofxAndroid/ofAndroidLib/gen
 !ofxAssimpModelLoader
 !ofxGui
 
+
+# It's my private repo and just can be changed by myself.
+# So do not ignore the following folders.
+!ofxKinectNui
+
+
 # don't ignore the .gitignore file
 !.gitignore
