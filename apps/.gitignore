@@ -13,3 +13,6 @@
 
 # don't ignore the .gitignore file
 !.gitignore
+
+# ignore backup file
+*.rar
