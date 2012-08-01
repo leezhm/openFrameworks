@@ -25,6 +25,10 @@ void testApp::setup() {
 	initSetting.grabSkeleton = true;
 	initSetting.grabCalibratedVideo = true;
 	initSetting.grabLabelCv = true;
+
+	initSetting.depthResolution = NUI_IMAGE_RESOLUTION_640x480;
+	initSetting.videoResolution = NUI_IMAGE_RESOLUTION_640x480;
+
 	kinect.init(initSetting);
 	kinect.open(false);
 //	kinect.open(true); // when you want to use near mode
@@ -53,7 +57,7 @@ void testApp::setup() {
 
 	ofSetFrameRate(60);
 	
-	calibratedTexture.allocate(320, 240, GL_RGB);
+	calibratedTexture.allocate(640, 480, GL_RGB);
 
 	videoDraw_ = ofxKinectNuiDrawTexture::createTextureForVideo();
 	depthDraw_ = ofxKinectNuiDrawTexture::createTextureForDepth();
@@ -66,8 +70,8 @@ void testApp::setup() {
 
 
 //p
-     vidCalibImage.allocate(320, 240);
-	 vidCalibImageOrig.allocate(320, 240);
+     vidCalibImage.allocate(640, 480);
+	 vidCalibImageOrig.allocate(640, 480);
 	 
 
 	 Kine_depth_width=kinect.getDepthPixels().getWidth();
@@ -80,7 +84,7 @@ void testApp::setup() {
 
 //init bkground   
 	 ofbkGound.loadImage("bk1.jpg");
-	 ofbkGound.resize(320,240);
+	 ofbkGound.resize(640,480);
 	 //bkGround.getCvImage()->=cvLoadImage("bk1.jpg",CV_LOAD_IMAGE_COLOR);
 	
 	
@@ -269,37 +273,37 @@ void testApp::draw() {
 		 unsigned char* bkpixels=ofbkGound.getPixels();
 	
          unsigned char* depthpixelCombination=    depthImageResult.getPixels();   //
-		  for(int ii=0;ii<vidCalibImage.height;ii++)
-		 {
-			 for(int jj=0;jj<vidCalibImage.width;jj++)
-			 {  
-				// if(depthpixel[ii*vidCalibImage.width+jj]<50)
-				//if(depthpixel[ii*vidCalibImage.width+jj]>50)
-				 {
-					 int graylevel=depthpixel[ii*vidCalibImage.width+jj];
-					 int bk0=bkpixels[int((ii*vidCalibImage.width+jj)*3)];
-					 int bk1=bkpixels[int((ii*vidCalibImage.width+jj)*3)+1];
-					 int bk2=bkpixels[int((ii*vidCalibImage.width+jj)*3)+2];
+	//for(int ii=0;ii<vidCalibImage.height;ii++)
+	//{
+	//	for(int jj=0;jj<vidCalibImage.width;jj++)
+	//	{  
+	//	// if(depthpixel[ii*vidCalibImage.width+jj]<50)
+	//	//if(depthpixel[ii*vidCalibImage.width+jj]>50)
+	//		{
+	//			int graylevel=depthpixel[ii*vidCalibImage.width+jj];
+	//			int bk0=bkpixels[int((ii*vidCalibImage.width+jj)*3)];
+	//			int bk1=bkpixels[int((ii*vidCalibImage.width+jj)*3)+1];
+	//			int bk2=bkpixels[int((ii*vidCalibImage.width+jj)*3)+2];
 
-					 int f0=vidCalibpixel[int((ii*vidCalibImage.width+jj)*3)];
-					 int f1=vidCalibpixel[int((ii*vidCalibImage.width+jj)*3)+1];
-					 int f2=vidCalibpixel[int((ii*vidCalibImage.width+jj)*3)+2];
+	//			int f0=vidCalibpixel[int((ii*vidCalibImage.width+jj)*3)];
+	//			int f1=vidCalibpixel[int((ii*vidCalibImage.width+jj)*3)+1];
+	//			int f2=vidCalibpixel[int((ii*vidCalibImage.width+jj)*3)+2];
 
-					 vidCalibpixel[int((ii*vidCalibImage.width+jj)*3)]=(f0*graylevel+bk0*(255-graylevel))/255;
-					 vidCalibpixel[int((ii*vidCalibImage.width+jj)*3+1)]=(f1*graylevel+bk1*(255-graylevel))/255;
-					 vidCalibpixel[int((ii*vidCalibImage.width+jj)*3+2)]=(f2*graylevel+bk2*(255-graylevel))/255;
+	//			vidCalibpixel[int((ii*vidCalibImage.width+jj)*3)]=(f0*graylevel+bk0*(255-graylevel))/255;
+	//			vidCalibpixel[int((ii*vidCalibImage.width+jj)*3+1)]=(f1*graylevel+bk1*(255-graylevel))/255;
+	//			vidCalibpixel[int((ii*vidCalibImage.width+jj)*3+2)]=(f2*graylevel+bk2*(255-graylevel))/255;
 
 
-				/*	 vidCalibpixel[int((ii*vidCalibImage.width+jj)*3)]=bkpixels[int((ii*vidCalibImage.width+jj)*3)];
-					 vidCalibpixel[int((ii*vidCalibImage.width+jj)*3+1)]=bkpixels[int((ii*vidCalibImage.width+jj)*3)+1];
-					 vidCalibpixel[int((ii*vidCalibImage.width+jj)*3+2)]=bkpixels[int((ii*vidCalibImage.width+jj)*3)+2];*/
-				 }
-			 }
-		 }
+	//	/*	 vidCalibpixel[int((ii*vidCalibImage.width+jj)*3)]=bkpixels[int((ii*vidCalibImage.width+jj)*3)];
+	//			vidCalibpixel[int((ii*vidCalibImage.width+jj)*3+1)]=bkpixels[int((ii*vidCalibImage.width+jj)*3)+1];
+	//			vidCalibpixel[int((ii*vidCalibImage.width+jj)*3+2)]=bkpixels[int((ii*vidCalibImage.width+jj)*3)+2];*/
+	//		}
+	//	}
+	//}
 
 
      vidCalibImage.flagImageChanged();
-     vidCalibImage.draw(500,300,640,480);
+     vidCalibImage.draw(500,600);
 	// ofbkGound.draw(500,300);
 	 depthImage.draw(500,20);
 	 depthImagePrev.draw(1140,20);

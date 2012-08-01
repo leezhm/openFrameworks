@@ -12,14 +12,17 @@
 /******************************************************************/
 #pragma once
 
+#include "ofxKinectNuiPlayer.h"
+#include "ofxKinectNuiRecorder.h"
+#include "ofxBase3DVideo.h"
+#include "ofxKinectNuiDraw.h"
+
 #include "ofxKinectNui.h"
 #include "ofMain.h"
 #include "ofxOpenCv.h"
 #include "ofxXmlSettings.h"
 
-#include "ofxKinectNuiPlayer.h"
-#include "ofxKinectNuiRecorder.h"
-#include "ofxBase3DVideo.h"
+
 
 class ofxKinectNuiDrawTexture;
 class ofxKinectNuiDrawSkeleton;
