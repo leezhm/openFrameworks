@@ -1,3 +1,5 @@
+#pragma warning (disable : 4003)
+
 #pragma once
 
 #include "ofConstants.h"
