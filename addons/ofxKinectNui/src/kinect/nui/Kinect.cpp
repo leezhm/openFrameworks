@@ -216,7 +216,7 @@ namespace kinect {
 
 		//----------------------------------------------------------
 		/**
-			@brief	Get color pixels coodinates from depth pixels
+			@brief	Get color pixels coordinates from depth pixels
 		*/
 		LONG Kinect::GetColorPixelCoordinatesFromDepthPixel(LONG lDepthPixel, USHORT usDepthValue)
 		{
