@@ -25,6 +25,8 @@ private:
 
 	void MappingColorPlayer(ofImage & player);
 
+	void Processing();
+
 private:
 	
 	ofxKinectNui KinectSensor;

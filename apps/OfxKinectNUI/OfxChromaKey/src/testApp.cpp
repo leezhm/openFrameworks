@@ -1,5 +1,9 @@
 #include "testApp.h"
 
+#include "opencv2/opencv.hpp"
+
+#include <iostream>
+
 //--------------------------------------------------------------
 void testApp::setup()
 {
@@ -75,6 +79,36 @@ void testApp::setup()
 	KinectSensor.setFarClippingDistance(farClipping);
 	KinectSensor.setNearClippingDistance(nearClipping);
 
+
+	//////////////////////////////////////////////////////////////////////////
+	// Do some testing
+	//////////////////////////////////////////////////////////////////////////
+	cv::Mat doMat(6, 8, CV_16UC1, cv::Scalar::all(8));
+	cv::randu(doMat, cv::Scalar::all(2), cv::Scalar::all(10));
+	std::cout<<"doMat "<<doMat<<std::endl;
+
+	cv::Mat outMat;
+	doMat.convertTo(outMat, CV_8UC1, 0.5);
+	std::cout<<"\noutMat "<<outMat<<std::endl;
+
+	int nSizeX = 8 * 0.75;
+	int nSizeY = 6 * 0.75;
+	std::cout<<"\nnSizeX = "<<nSizeX<<"  nSizeY = "<<nSizeY<<std::endl;
+
+	cv::Mat rsOutMat;
+
+	cv::resize(outMat, rsOutMat, cvSize(nSizeX, nSizeY), 0.0f, 0.0f, cv::INTER_NEAREST);
+	std::cout<<"\nrsOutMat "<<rsOutMat<<std::endl;
+
+	cv::Mat equalMat = (rsOutMat == 4);
+	std::cout<<"\nequalMat "<<equalMat<<std::endl;
+
+	cv::Mat rsProcessedMat;
+	cv::Mat rsMask(nSizeY, nSizeX, CV_8UC1, cv::Scalar::all(250));
+	cv::randu(rsMask, cv::Scalar::all(1), cv::Scalar::all(255));
+	cv::inpaint(rsOutMat, rsMask, rsProcessedMat, 3, cv::INPAINT_TELEA);
+	std::cout<<"\nrsMask "<<rsMask<<std::endl;
+	std::cout<<"\nrsProcessedMat "<<rsProcessedMat<<std::endl;
 }
 
 //--------------------------------------------------------------
@@ -292,4 +326,25 @@ void testApp::windowResized(int w, int h)
 void testApp::MappingColorPlayer(ofImage & player)
 {
 
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+//	depth image ´¦Àí
+//
+//////////////////////////////////////////////////////////////////////////
+void testApp::Processing()
+{
+	double fInpaintRadius = 3;
+	int nInpaintUsersDilateSteps = 3; // three times
+
+	if(0.0001f < fInpaintRadius)
+	{
+		// Dilate users buffer
+		if(0 < nInpaintUsersDilateSteps)
+		{
+
+		}
+	}
 }
