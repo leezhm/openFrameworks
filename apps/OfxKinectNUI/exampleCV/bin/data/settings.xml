@@ -1,0 +1,7 @@
+< xml version='1.0' coding='utf-8'>
+<KINECT>
+	<CLIPPING>
+		<NEAR>800</NEAR>
+		<FAR>1470</FAR>
+	</CLIPPING>
+</KINECT>

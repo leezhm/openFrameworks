@@ -1,0 +1,9 @@
+<KINECT>
+    <CLIPPING>
+        <NEAR>900</NEAR>
+        <FAR>1450</FAR>
+    </CLIPPING>
+	<OPENCV>
+		<THRESHOLD>25</THRESHOLD>
+	</OPENCV>
+</KINECT>
