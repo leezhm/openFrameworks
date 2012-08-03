@@ -22,10 +22,10 @@
 !/OfxkinectNUI/
 
 /OfxKinectNUI/*/bin/*
+!/OfxKinectNUI/*/bin/data/
+
 /OfxKinectNUI/*/obj/
 /OfxKinectNUI/*/ipch/
-
-/OfxKinectNUI/*/data/*
 
 /OfxKinectNUI/*/.cproject
 /OfxKinectNUI/*/.project
