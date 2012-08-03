@@ -40,7 +40,7 @@ class ofxCvGrayscaleImage : public ofxCvImage {
     // virtual ofRectangle  getROI();                                         //in base class
     // virtual void  resetROI();                                              //in base class
     // virtual ofRectangle  getIntersectionROI( ofRectangle& rec1,      
-    //                                          ofRectangle& rec2 );          // inbase class
+    //                                          ofRectangle& rec2 );          // in base class
     
     
     

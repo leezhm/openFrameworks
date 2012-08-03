@@ -123,14 +123,14 @@ void testApp::update()
 
 		// threshold Image
 		thresholdImage.setFromPixels(KinectSensor.getDepthPixels());
-		thresholdImage.threshold(threshold);
+		//thresholdImage.threshold(threshold);
 
 		//
 		//	Process
 		//
-		thresholdImage.blurGaussian(3);
-		thresholdImage.erode_3x3();
-		thresholdImage.dilate_3x3();
+		//thresholdImage.blurGaussian(3);
+		//thresholdImage.erode_3x3();
+		//thresholdImage.dilate_3x3();
 
 		//thresholdImage.threshold()
 		//LabelImage.adaptiveThreshold(5, 0, false, true);
@@ -344,6 +344,7 @@ void testApp::Processing()
 		// Dilate users buffer
 		if(0 < nInpaintUsersDilateSteps)
 		{
+			// 对Player单通道图进行膨胀
 
 		}
 	}
