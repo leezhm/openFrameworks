@@ -583,7 +583,7 @@ void xcodeProject::addInclude(string includeName){
     } else {
 
         //printf("we don't have HEADER_SEARCH_PATHS, so we're adding them... and calling this function again \n");
-        query[255];
+        //query[255];
         sprintf(query, "//key[contains(.,'baseConfigurationReference')]/parent::node()//key[contains(.,'buildSettings')]/following-sibling::node()[1]");
         pugi::xpath_node_set dictArray = doc.select_nodes(query);
 
@@ -630,7 +630,7 @@ void xcodeProject::addLibrary(string libraryName, LibType libType){
     } else {
 
         //printf("we don't have OTHER_LDFLAGS, so we're adding them... and calling this function again \n");
-        query[255];
+        //query[255];
         sprintf(query, "//key[contains(.,'baseConfigurationReference')]/parent::node()//key[contains(.,'buildSettings')]/following-sibling::node()[1]");
 
         pugi::xpath_node_set dictArray = doc.select_nodes(query);
