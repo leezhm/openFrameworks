@@ -719,6 +719,7 @@ enum {
 
 /* Special folders */
 enum {
+<<<<<<< HEAD
     kAppleExtrasFolderIcon      = FOUR_CHAR_CODE('aex'),
     kAppleMenuFolderIcon        = FOUR_CHAR_CODE('amnu'),
     kApplicationsFolderIcon     = FOUR_CHAR_CODE('apps'),
@@ -728,11 +729,23 @@ enum {
     kControlPanelDisabledFolderIcon = FOUR_CHAR_CODE('ctrD'),
     kControlPanelFolderIcon     = FOUR_CHAR_CODE('ctrl'),
     kControlStripModulesFolderIcon = FOUR_CHAR_CODE('sdv'),
+=======
+    kAppleExtrasFolderIcon      = FOUR_CHAR_CODE('aex '),
+    kAppleMenuFolderIcon        = FOUR_CHAR_CODE('amnu'),
+    kApplicationsFolderIcon     = FOUR_CHAR_CODE('apps'),
+    kApplicationSupportFolderIcon = FOUR_CHAR_CODE('asup'),
+    kAssistantsFolderIcon       = FOUR_CHAR_CODE('ast '),
+    kContextualMenuItemsFolderIcon = FOUR_CHAR_CODE('cmnu'),
+    kControlPanelDisabledFolderIcon = FOUR_CHAR_CODE('ctrD'),
+    kControlPanelFolderIcon     = FOUR_CHAR_CODE('ctrl'),
+    kControlStripModulesFolderIcon = FOUR_CHAR_CODE('sdv '),
+>>>>>>> f630a658d5535a927e34295227fc5ed0d7b3b115
     kDocumentsFolderIcon        = FOUR_CHAR_CODE('docs'),
     kExtensionsDisabledFolderIcon = FOUR_CHAR_CODE('extD'),
     kExtensionsFolderIcon       = FOUR_CHAR_CODE('extn'),
     kFavoritesFolderIcon        = FOUR_CHAR_CODE('favs'),
     kFontsFolderIcon            = FOUR_CHAR_CODE('font'),
+<<<<<<< HEAD
     kHelpFolderIcon             = FOUR_CHAR_CODE('hlp'),
     kInternetFolderIcon         = FOUR_CHAR_CODE('int'),
     kInternetPlugInFolderIcon   = FOUR_CHAR_CODE('net'),
@@ -741,13 +754,29 @@ enum {
     kPreferencesFolderIcon      = FOUR_CHAR_CODE('prf'),
     kPrinterDescriptionFolderIcon = FOUR_CHAR_CODE('ppdf'),
     kPrinterDriverFolderIcon    = FOUR_CHAR_CODE('prd'),
+=======
+    kHelpFolderIcon             = FOUR_CHAR_CODE('hlp '),
+    kInternetFolderIcon         = FOUR_CHAR_CODE('int '),
+    kInternetPlugInFolderIcon   = FOUR_CHAR_CODE('net '),
+    kLocalesFolderIcon          = FOUR_CHAR_CODE('loc '),
+    kMacOSReadMeFolderIcon      = FOUR_CHAR_CODE('mor '),
+    kPreferencesFolderIcon      = FOUR_CHAR_CODE('prf '),
+    kPrinterDescriptionFolderIcon = FOUR_CHAR_CODE('ppdf'),
+    kPrinterDriverFolderIcon    = FOUR_CHAR_CODE('prd '),
+>>>>>>> f630a658d5535a927e34295227fc5ed0d7b3b115
     kPrintMonitorFolderIcon     = FOUR_CHAR_CODE('prnt'),
     kRecentApplicationsFolderIcon = FOUR_CHAR_CODE('rapp'),
     kRecentDocumentsFolderIcon  = FOUR_CHAR_CODE('rdoc'),
     kRecentServersFolderIcon    = FOUR_CHAR_CODE('rsrv'),
+<<<<<<< HEAD
     kScriptingAdditionsFolderIcon = FOUR_CHAR_CODE('scr'),
     kSharedLibrariesFolderIcon  = FOUR_CHAR_CODE('lib'),
     kScriptsFolderIcon          = FOUR_CHAR_CODE('scr'),
+=======
+    kScriptingAdditionsFolderIcon = FOUR_CHAR_CODE('scr '),
+    kSharedLibrariesFolderIcon  = FOUR_CHAR_CODE('lib '),
+    kScriptsFolderIcon          = FOUR_CHAR_CODE('scr '),
+>>>>>>> f630a658d5535a927e34295227fc5ed0d7b3b115
     kShutdownItemsDisabledFolderIcon = FOUR_CHAR_CODE('shdD'),
     kShutdownItemsFolderIcon    = FOUR_CHAR_CODE('shdf'),
     kSpeakableItemsFolder       = FOUR_CHAR_CODE('spki'),
@@ -755,6 +784,7 @@ enum {
     kStartupItemsFolderIcon     = FOUR_CHAR_CODE('strt'),
     kSystemExtensionDisabledFolderIcon = FOUR_CHAR_CODE('macD'),
     kSystemFolderIcon           = FOUR_CHAR_CODE('macs'),
+<<<<<<< HEAD
     kTextEncodingsFolderIcon    = FOUR_CHAR_CODE('tex'),
     kAppearanceFolderIcon       = FOUR_CHAR_CODE('appr'),
     kUtilitiesFolderIcon        = FOUR_CHAR_CODE('uti'),
@@ -762,6 +792,15 @@ enum {
     kColorSyncFolderIcon        = FOUR_CHAR_CODE('prof'),
     kInternetSearchSitesFolderIcon = FOUR_CHAR_CODE('issf'),
     kUsersFolderIcon            = FOUR_CHAR_CODE('usr')
+=======
+    kTextEncodingsFolderIcon    = FOUR_CHAR_CODE('tex '),
+    kAppearanceFolderIcon       = FOUR_CHAR_CODE('appr'),
+    kUtilitiesFolderIcon        = FOUR_CHAR_CODE('uti '),
+    kVoicesFolderIcon           = FOUR_CHAR_CODE('fvoc'),
+    kColorSyncFolderIcon        = FOUR_CHAR_CODE('prof'),
+    kInternetSearchSitesFolderIcon = FOUR_CHAR_CODE('issf'),
+    kUsersFolderIcon            = FOUR_CHAR_CODE('usr ')
+>>>>>>> f630a658d5535a927e34295227fc5ed0d7b3b115
 };
 
 /* Badges */

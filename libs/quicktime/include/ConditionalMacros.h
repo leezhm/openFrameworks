@@ -206,7 +206,11 @@
  #if TARGET_RT_MAC_CFM 
      #define PRAGMA_IMPORT           1
       #if (__SC__ <= 0x0810)
+<<<<<<< HEAD
          /* old versions of SC don't support ?pragma import reset?*/
+=======
+         /* old versions of SC don't support "#pragma import reset" */
+>>>>>>> f630a658d5535a927e34295227fc5ed0d7b3b115
           #define PRAGMA_IMPORT_OFF   1
       #endif
  #else
