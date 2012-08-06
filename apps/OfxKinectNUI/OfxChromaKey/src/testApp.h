@@ -27,6 +27,12 @@ private:
 
 	void Processing();
 
+	bool Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInpaintResizeScale, int nInpaintUsersDilateSteps, 
+										float fInpaintDepthValueNonUsers, int nMedianFilterDepthSize, int nAlphaErodeSteps, 
+										int nAlphaDilateSteps, float fAlphaErodeDilateScale, int nAlphaErodeDilateKernelType, 
+										int nAlphaErodeDilateKernelSize, int nAlphaOffsetX, int nAlphaOffsetY, int nMedianFilterAlphaSize, 
+										float fMedianFilterAlphaScale, int nAlphaBlurFilterSize);
+
 private:
 	
 	ofxKinectNui KinectSensor;
