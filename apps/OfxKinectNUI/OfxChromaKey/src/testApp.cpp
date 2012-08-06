@@ -353,17 +353,29 @@ void testApp::Processing()
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-static Mat matKinectDepth(Size(640, 480), CV_16UC1);
-static Mat matKinectMask (Size(640, 480), CV_8UC1);
-static Mat matKinectAlpha(Size(640, 480), CV_8UC1);
-static Mat matKinectRGB  (Size(640, 480), CV_8UC3);
-static Mat matKinectUsers(Size(640, 480), CV_8UC1);
+static cv::Mat matKinectDepth(cv::Size(640, 480), CV_16UC1);
+static cv::Mat matKinectMask (cv::Size(640, 480), CV_8UC1);
+static cv::Mat matKinectAlpha(cv::Size(640, 480), CV_8UC1);
+static cv::Mat matKinectRGB  (cv::Size(640, 480), CV_8UC3);
+static cv::Mat matKinectUsers(cv::Size(640, 480), CV_8UC1);
+
+static unsigned int * g_pucPackedKinectRGBDepthPixels;
+static unsigned char * g_pucKinectAlphaPixels;
 
 static unsigned int			g_nDepthWidth	= 0;
 static unsigned int			g_nDepthHeight	= 0;
 
+static unsigned int			g_fDepthRangeEndMeters = 1400;
+static unsigned int			g_fDepthRangeStartMeters = 900;
 
-bool testApp::Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInpaintResizeScale, int nInpaintUsersDilateSteps, float fInpaintDepthValueNonUsers, int nMedianFilterDepthSize, int nAlphaErodeSteps, int nAlphaDilateSteps, float fAlphaErodeDilateScale, int nAlphaErodeDilateKernelType, int nAlphaErodeDilateKernelSize, int nAlphaOffsetX, int nAlphaOffsetY, int nMedianFilterAlphaSize, float fMedianFilterAlphaScale, int nAlphaBlurFilterSize)
+static bool g_bDebugPixels = true;
+
+
+bool testApp::Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInpaintResizeScale, int nInpaintUsersDilateSteps, 
+												float fInpaintDepthValueNonUsers, int nMedianFilterDepthSize, int nAlphaErodeSteps, 
+												int nAlphaDilateSteps, float fAlphaErodeDilateScale, int nAlphaErodeDilateKernelType, 
+												int nAlphaErodeDilateKernelSize, int nAlphaOffsetX, int nAlphaOffsetY, int nMedianFilterAlphaSize, 
+												float fMedianFilterAlphaScale, int nAlphaBlurFilterSize)
 {
 	if(((nMedianFilterDepthSize % 2) == 0) && (nMedianFilterDepthSize > 0))
 	{
@@ -382,7 +394,7 @@ bool testApp::Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInp
 
 	bool bProcessed = false;
 
-	Mat matProcessed;
+	cv::Mat matProcessed;
 
 	// Inpaint z and normal filter
 
@@ -393,8 +405,8 @@ bool testApp::Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInp
 		if(nInpaintUsersDilateSteps > 0)
 		{
 			// 对得到的User单通道图进行膨胀，默认3x3的内核，nInpaintUsersDilateSteps次操作
-			Mat matUsersDilated;
-			cv::dilate(matKinectUsers, matUsersDilated, Mat(), Point(-1, -1), nInpaintUsersDilateSteps);
+			cv::Mat matUsersDilated;
+			cv::dilate(matKinectUsers, matUsersDilated, cv::Mat(), cv::Point(-1, -1), nInpaintUsersDilateSteps);
 			matUsersDilated.copyTo(matKinectUsers);
 		}
 
@@ -444,13 +456,13 @@ bool testApp::Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInp
 		// Inpaint z
 		if(fInpaintResizeScale < 0.999f) // fInpaintResizeScale是么意思，么作用
 		{
-			Mat matKinectDepth8;
-			Mat matKinectDepth16;
-			Mat matResizedDepth;
-			Mat matResizedMask;
-			Mat matResizedProcessed;
-			Mat matProcessedResizedBack;
-			Mat matBlurred;
+			cv::Mat matKinectDepth8;
+			cv::Mat matKinectDepth16;
+			cv::Mat matResizedDepth;
+			cv::Mat matResizedMask;
+			cv::Mat matResizedProcessed;
+			cv::Mat matProcessedResizedBack;
+			cv::Mat matBlurred;
 
 			Point minLoc;
 			double minval,maxval;
@@ -463,11 +475,11 @@ bool testApp::Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInp
 			int nNewSizeY = matKinectDepth.rows * fInpaintResizeScale;
 
 			// 进行矩阵的缩放，明显fInpaintResizeScale < 1所以是缩小
-			cv::resize(matKinectDepth8, matResizedDepth, cvSize(nNewSizeX, nNewSizeY), 0.0f, 0.0f, INTER_NEAREST);
-			cv::resize(matKinectMask,   matResizedMask,  cvSize(nNewSizeX, nNewSizeY), 0.0f, 0.0f, INTER_NEAREST);
+			cv::resize(matKinectDepth8, matResizedDepth, cvSize(nNewSizeX, nNewSizeY), 0.0f, 0.0f, cv::INTER_NEAREST);
+			cv::resize(matKinectMask,   matResizedMask,  cvSize(nNewSizeX, nNewSizeY), 0.0f, 0.0f, cv::INTER_NEAREST);
 
 			// 对
-			cv::inpaint(matResizedDepth, (matResizedMask == 255), matResizedProcessed, fInpaintRadius, INPAINT_TELEA);
+			cv::inpaint(matResizedDepth, (matResizedMask == 255), matResizedProcessed, fInpaintRadius, cv::INPAINT_TELEA);
 
 			// 再次缩放回去为原来的尺寸
 			cv::resize(matResizedProcessed, matProcessedResizedBack, matKinectDepth.size());
@@ -495,8 +507,8 @@ bool testApp::Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInp
 		}
 		else
 		{
-			Mat matKinectDepth8;
-			Mat matProcessed8;
+			cv::Mat matKinectDepth8;
+			cv::Mat matProcessed8;
 
 			// Inpaint z-values on original image using the provided mask
 			Point minLoc;
@@ -504,11 +516,11 @@ bool testApp::Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInp
 			minMaxLoc(matKinectDepth, &minval, &maxval, NULL, NULL);	// 找出填充后的matKinectDepth中的最大和最小值
 			matKinectDepth.convertTo(matKinectDepth8, CV_8UC1, 255.0 / maxval);	
 
-			cv::inpaint(matKinectDepth8, (matKinectMask == 255), matProcessed8, fInpaintRadius, INPAINT_TELEA);
+			cv::inpaint(matKinectDepth8, (matKinectMask == 255), matProcessed8, fInpaintRadius, cv::INPAINT_TELEA);
 
 			if(nMedianFilterDepthSize > 0)
 			{
-				Mat matBlurred;
+				cv::Mat matBlurred;
 				cv::medianBlur(matProcessed8, matBlurred, nMedianFilterDepthSize);
 				matBlurred.convertTo(matProcessed, CV_16UC1, maxval / 255.0);
 			}
@@ -528,8 +540,8 @@ bool testApp::Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInp
 		double minval,maxval;
 		minMaxLoc(matKinectDepth, &minval, &maxval, NULL, NULL);
 
-		Mat matBlurred;
-		Mat matKinectDepth8;
+		cv::Mat matBlurred;
+		cv::Mat matKinectDepth8;
 		matKinectDepth.convertTo(matKinectDepth8, CV_8UC1, 255.0 / maxval);
 		cv::medianBlur(matKinectDepth8, matBlurred, nMedianFilterDepthSize);
 		matBlurred.convertTo(matProcessed, CV_16UC1, maxval / 255.0);
@@ -542,7 +554,6 @@ bool testApp::Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInp
 		if(bProcessed == true)
 		{
 			// Remove depths out of range and create alpha mask (0 or 255)
-
 			float fInvRange255 = 255.0f / (g_fDepthRangeEndMeters - g_fDepthRangeStartMeters);
 			float fToMeters    = 1.0f / 1000.0f;
 
@@ -585,7 +596,7 @@ bool testApp::Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInp
 		}
 
 		// Offset alpha mask
-		// this is the main other thing to get the depth to align properly to colour.
+		// this is the main other thing to get the depth to align properly to color.
 
 		if(nAlphaOffsetX != 0 || nAlphaOffsetY != 0)
 		{
@@ -606,8 +617,8 @@ bool testApp::Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInp
 				dstPoints[i].y = (((srcPoints[i].y - (g_nDepthHeight / 2)) * fAlphaScale) + (g_nDepthHeight / 2)) + nAlphaOffsetY;
 			}
 
-			Mat matAffine;
-			Mat matWarped;
+			cv::Mat matAffine;
+			cv::Mat matWarped;
 
 			matAffine = cv::getAffineTransform(srcPoints, dstPoints);
 			cv::warpAffine(matKinectAlpha, matWarped, matAffine, matKinectAlpha.size());
@@ -618,55 +629,55 @@ bool testApp::Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInp
 		// Erode & Dilate
 
 		bool bErodeDilateResized   = false;
-		Mat  matStructuringElement = cv::getStructuringElement(MORPH_CROSS, cvSize(nAlphaErodeDilateKernelSize, nAlphaErodeDilateKernelSize));
+		cv::Mat  matStructuringElement = cv::getStructuringElement(cv::MORPH_CROSS, cvSize(nAlphaErodeDilateKernelSize, nAlphaErodeDilateKernelSize));
 
 		if(nAlphaErodeDilateKernelType == 0)
 		{
-			matStructuringElement = cv::getStructuringElement(MORPH_CROSS, cvSize(nAlphaErodeDilateKernelSize, nAlphaErodeDilateKernelSize));
+			matStructuringElement = cv::getStructuringElement(cv::MORPH_CROSS, cvSize(nAlphaErodeDilateKernelSize, nAlphaErodeDilateKernelSize));
 		}
 		else if(nAlphaErodeDilateKernelType == 1)
 		{
-			matStructuringElement = cv::getStructuringElement(MORPH_RECT, cvSize(nAlphaErodeDilateKernelSize, nAlphaErodeDilateKernelSize));
+			matStructuringElement = cv::getStructuringElement(cv::MORPH_RECT, cvSize(nAlphaErodeDilateKernelSize, nAlphaErodeDilateKernelSize));
 		}
 		else if(nAlphaErodeDilateKernelType == 2)
 		{
-			matStructuringElement = cv::getStructuringElement(MORPH_ELLIPSE, cvSize(nAlphaErodeDilateKernelSize, nAlphaErodeDilateKernelSize));
+			matStructuringElement = cv::getStructuringElement(cv::MORPH_ELLIPSE, cvSize(nAlphaErodeDilateKernelSize, nAlphaErodeDilateKernelSize));
 		}
 
 		if((nAlphaErodeSteps > 0 || nAlphaDilateSteps > 0) && IS_ONE(fAlphaErodeDilateScale) == false)
 		{
-			Mat matErodeDilateScaled;
-			cv::resize(matKinectAlpha, matErodeDilateScaled, cvSize(g_nDepthWidth * fAlphaErodeDilateScale, g_nDepthHeight * fAlphaErodeDilateScale), 0.0f, 0.0f, INTER_LINEAR);
+			cv::Mat matErodeDilateScaled;
+			cv::resize(matKinectAlpha, matErodeDilateScaled, cvSize(g_nDepthWidth * fAlphaErodeDilateScale, g_nDepthHeight * fAlphaErodeDilateScale), 0.0f, 0.0f, cv::INTER_LINEAR);
 			matErodeDilateScaled.copyTo(matKinectAlpha);
 			bErodeDilateResized = true;
 		}
 
 		if(nAlphaErodeSteps > 0 && nAlphaDilateSteps > 0)
 		{
-			Mat matIntermediate;
-			cv::erode (matKinectAlpha,  matIntermediate, matStructuringElement, Point(-1, -1), nAlphaErodeSteps);
-			cv::dilate(matIntermediate, matKinectAlpha,  matStructuringElement, Point(-1, -1), nAlphaDilateSteps);
+			cv::Mat matIntermediate;
+			cv::erode (matKinectAlpha,  matIntermediate, matStructuringElement, cv::Point(-1, -1), nAlphaErodeSteps);
+			cv::dilate(matIntermediate, matKinectAlpha,  matStructuringElement, cv::Point(-1, -1), nAlphaDilateSteps);
 			bProcessed = true;
 		}
 		else if(nAlphaErodeSteps > 0)
 		{
-			Mat matEroded;
-			cv::erode(matKinectAlpha, matEroded, matStructuringElement, Point(-1, -1), nAlphaErodeSteps);
+			cv::Mat matEroded;
+			cv::erode(matKinectAlpha, matEroded, matStructuringElement, cv::Point(-1, -1), nAlphaErodeSteps);
 			matEroded.copyTo(matKinectAlpha);
 			bProcessed = true;
 		}
 		else if(nAlphaDilateSteps > 0)
 		{
-			Mat matDilated;
-			cv::dilate(matKinectAlpha, matDilated, matStructuringElement, Point(-1, -1), nAlphaDilateSteps);
+			cv::Mat matDilated;
+			cv::dilate(matKinectAlpha, matDilated, matStructuringElement, cv::Point(-1, -1), nAlphaDilateSteps);
 			matDilated.copyTo(matKinectAlpha);
 			bProcessed = true;
 		}
 
 		if(bErodeDilateResized)
 		{
-			Mat matErodeDilateScaled;
-			cv::resize(matKinectAlpha, matErodeDilateScaled, cvSize(g_nDepthWidth, g_nDepthHeight), 0.0f, 0.0f, INTER_LINEAR);
+			cv::Mat matErodeDilateScaled;
+			cv::resize(matKinectAlpha, matErodeDilateScaled, cvSize(g_nDepthWidth, g_nDepthHeight), 0.0f, 0.0f, cv::INTER_LINEAR);
 			matErodeDilateScaled.copyTo(matKinectAlpha);
 		}
 
@@ -678,18 +689,18 @@ bool testApp::Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInp
 
 			if(IS_ONE(fMedianFilterAlphaScale) == false)
 			{
-				Mat matScaled;
-				cv::resize(matKinectAlpha, matScaled, cvSize(g_nDepthWidth * fMedianFilterAlphaScale, g_nDepthHeight * fMedianFilterAlphaScale), 0.0f, 0.0f, INTER_LINEAR);
+				cv::Mat matScaled;
+				cv::resize(matKinectAlpha, matScaled, cvSize(g_nDepthWidth * fMedianFilterAlphaScale, g_nDepthHeight * fMedianFilterAlphaScale), 0.0f, 0.0f, cv::INTER_LINEAR);
 				matScaled.copyTo(matKinectAlpha);
 				bAlphaMedianResized = true;
 			}
 
-			Mat matFiltered;
+			cv::Mat matFiltered;
 			cv::medianBlur(matKinectAlpha, matFiltered, nMedianFilterAlphaSize);
 
 			if(bAlphaMedianResized)
 			{
-				cv::resize(matFiltered, matKinectAlpha, cvSize(g_nDepthWidth, g_nDepthHeight), 0.0f, 0.0f, INTER_LINEAR);
+				cv::resize(matFiltered, matKinectAlpha, cvSize(g_nDepthWidth, g_nDepthHeight), 0.0f, 0.0f, cv::INTER_LINEAR);
 			}
 			else
 			{
@@ -703,7 +714,7 @@ bool testApp::Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInp
 
 		if(nAlphaBlurFilterSize > 0)
 		{
-			Mat matBlurred;
+			cv::Mat matBlurred;
 			cv::GaussianBlur(matKinectAlpha, matBlurred, cvSize(nAlphaBlurFilterSize, nAlphaBlurFilterSize), 0.0, 0.0);
 			matBlurred.copyTo(matKinectAlpha);
 			bProcessed = true;
