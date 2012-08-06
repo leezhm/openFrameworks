@@ -13,3 +13,15 @@
 
 # don't ignore the .gitignore file
 !.gitignore
+
+# ignore bin folders' contents, except data folder therein
+# my own projects folder
+!maczli/
+
+/maczli/*/bin/*
+!/maczli/*/bin/data/
+
+/maczli/*/.cproject
+/maczli/*/.project
+/maczli/*/.settings/
+
