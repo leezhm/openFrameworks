@@ -20,7 +20,6 @@ class ofxCvShortImage : public ofxCvImage {
 
 
   public:
-
     ofxCvShortImage();
     ofxCvShortImage( const ofxCvShortImage& mom );
     // virtual void  allocate( int w, int h );                                //in base class

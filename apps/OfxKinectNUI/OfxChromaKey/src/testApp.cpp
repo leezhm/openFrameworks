@@ -1,7 +1,5 @@
 #include "testApp.h"
 
-#include "opencv2/opencv.hpp"
-
 #include <iostream>
 
 //--------------------------------------------------------------
@@ -17,8 +15,8 @@ void testApp::setup()
 	setting.grabAudio = false;
 	setting.grabCalibratedVideo = true;
 	setting.grabDepth = true;
-	setting.grabLabel = false;		// we do not use the label image
-	setting.grabLabelCv = false;	//
+	setting.grabLabel = true;		
+	setting.grabLabelCv = true;	
 	setting.grabSkeleton = false;
 	setting.grabVideo = true;
 
@@ -45,7 +43,31 @@ void testApp::setup()
 			ColorWidth = 640;
 			ColorHeight = 480;
 
-			ofLog(OF_LOG_ERROR)<<"Unavailable NUI_IMAGE_RESOLUTION ... "<<endl;
+			ofLog(OF_LOG_ERROR)<<"Color -> Unavailable NUI_IMAGE_RESOLUTION ... "<<endl;
+			break;
+		}
+	}
+
+	switch(setting.depthResolution)
+	{
+	case NUI_IMAGE_RESOLUTION_640x480:
+		{
+			DepthWidth = 640;
+			DepthHeight = 480;
+			break;
+		}
+	case NUI_IMAGE_RESOLUTION_320x240:
+		{
+			DepthWidth = 320;
+			DepthHeight = 240;
+			break;
+		}
+	default:
+		{
+			DepthWidth = 640;
+			DepthHeight = 480;
+
+			ofLog(OF_LOG_ERROR)<<"Depth -> Unavailable NUI_IMAGE_RESOLUTION ... "<<endl;
 			break;
 		}
 	}
@@ -59,10 +81,11 @@ void testApp::setup()
 	Angle = KinectSensor.getCurrentAngle();
 
 	// Allocate image memory
-	ColorImage.allocate(ColorWidth, ColorHeight, OF_IMAGE_COLOR);
+	ColorImage.allocate(ColorWidth, ColorHeight);
 
 	// Allocate the threshold image
-	thresholdImage.allocate(640, 480);
+	depthImage.allocate(DepthWidth, DepthHeight);
+	userImage.allocate(DepthWidth, DepthHeight);
 
 	// Allocate colorful player image
 	// Allocate image memory
@@ -79,36 +102,45 @@ void testApp::setup()
 	KinectSensor.setFarClippingDistance(farClipping);
 	KinectSensor.setNearClippingDistance(nearClipping);
 
+	//////////////////////////////////////////////////////////////////////////
+	// Init processing variable
+	//////////////////////////////////////////////////////////////////////////
+	ofxCvKinectRGB.allocate(ColorWidth, ColorHeight);
+	ofxCvKinectAlpha.allocate(DepthWidth, DepthHeight);
+	ofxCvKinectDepth.allocate(DepthWidth, DepthHeight);
+	ofxCvKinectMask.allocate(DepthWidth, DepthHeight);
+	ofxCvKinectUsers.allocate(DepthWidth, DepthHeight);
+
 
 	//////////////////////////////////////////////////////////////////////////
 	// Do some testing
 	//////////////////////////////////////////////////////////////////////////
-	cv::Mat doMat(6, 8, CV_16UC1, cv::Scalar::all(8));
-	cv::randu(doMat, cv::Scalar::all(2), cv::Scalar::all(10));
-	std::cout<<"doMat "<<doMat<<std::endl;
+	////cv::Mat doMat(6, 8, CV_16UC1, cv::Scalar::all(8));
+	////cv::randu(doMat, cv::Scalar::all(2), cv::Scalar::all(10));
+	////std::cout<<"doMat "<<doMat<<std::endl;
 
-	cv::Mat outMat;
-	doMat.convertTo(outMat, CV_8UC1, 0.5);
-	std::cout<<"\noutMat "<<outMat<<std::endl;
+	////cv::Mat outMat;
+	////doMat.convertTo(outMat, CV_8UC1, 0.5);
+	////std::cout<<"\noutMat "<<outMat<<std::endl;
 
-	int nSizeX = 8 * 0.75;
-	int nSizeY = 6 * 0.75;
-	std::cout<<"\nnSizeX = "<<nSizeX<<"  nSizeY = "<<nSizeY<<std::endl;
+	////int nSizeX = 8 * 0.75;
+	////int nSizeY = 6 * 0.75;
+	////std::cout<<"\nnSizeX = "<<nSizeX<<"  nSizeY = "<<nSizeY<<std::endl;
 
-	cv::Mat rsOutMat;
+	////cv::Mat rsOutMat;
 
-	cv::resize(outMat, rsOutMat, cvSize(nSizeX, nSizeY), 0.0f, 0.0f, cv::INTER_NEAREST);
-	std::cout<<"\nrsOutMat "<<rsOutMat<<std::endl;
+	////cv::resize(outMat, rsOutMat, cvSize(nSizeX, nSizeY), 0.0f, 0.0f, cv::INTER_NEAREST);
+	////std::cout<<"\nrsOutMat "<<rsOutMat<<std::endl;
 
-	cv::Mat equalMat = (rsOutMat == 4);
-	std::cout<<"\nequalMat "<<equalMat<<std::endl;
+	////cv::Mat equalMat = (rsOutMat == 4);
+	////std::cout<<"\nequalMat "<<equalMat<<std::endl;
 
-	cv::Mat rsProcessedMat;
-	cv::Mat rsMask(nSizeY, nSizeX, CV_8UC1, cv::Scalar::all(250));
-	cv::randu(rsMask, cv::Scalar::all(1), cv::Scalar::all(255));
-	cv::inpaint(rsOutMat, rsMask, rsProcessedMat, 3, cv::INPAINT_TELEA);
-	std::cout<<"\nrsMask "<<rsMask<<std::endl;
-	std::cout<<"\nrsProcessedMat "<<rsProcessedMat<<std::endl;
+	////cv::Mat rsProcessedMat;
+	////cv::Mat rsMask(nSizeY, nSizeX, CV_8UC1, cv::Scalar::all(250));
+	////cv::randu(rsMask, cv::Scalar::all(1), cv::Scalar::all(255));
+	////cv::inpaint(rsOutMat, rsMask, rsProcessedMat, 3, cv::INPAINT_TELEA);
+	////std::cout<<"\nrsMask "<<rsMask<<std::endl;
+	////std::cout<<"\nrsProcessedMat "<<rsProcessedMat<<std::endl;
 }
 
 //--------------------------------------------------------------
@@ -121,30 +153,40 @@ void testApp::update()
 	{
 		ColorImage.setFromPixels(KinectSensor.getVideoPixels());
 
-		// threshold Image
-		thresholdImage.setFromPixels(KinectSensor.getDepthPixels());
-		//thresholdImage.threshold(threshold);
+		// depth Image
+		depthImage.setFromPixels(KinectSensor.getDepthPixels());
 
-		//
-		//	Process
-		//
-		//thresholdImage.blurGaussian(3);
-		//thresholdImage.erode_3x3();
-		//thresholdImage.dilate_3x3();
+		// user Image
+		userImage.setFromPixels(KinectSensor.getLabelPixelsCv(0));
 
-		//thresholdImage.threshold()
-		//LabelImage.adaptiveThreshold(5, 0, false, true);
+
+		//////////////////////////////////////////////////////////////////////////
+		//
+		//	Copy data
+		//
+		//////////////////////////////////////////////////////////////////////////
+		//ofxCvKinectDepth.setFromPixels(KinectSensor.getDistancePixels().getPixels(), ColorWidth, ColorHeight);
+
+		// the ofxCvGrayscaleImage had override the operator '='
+		ofxCvKinectUsers = userImage;
+		ofxCvKinectRGB = ColorImage;
+		
+		ofxCvKinectMask.set(0);
+		ofxCvKinectAlpha.set(255);
+
+		Processing();
+
 
 		ColorPlayer.setFromPixels(KinectSensor.getCalibratedVideoPixels());
 
 		ofColor color;
 		color.set(0, 0, 0);
 		
-		for(int hIndex = 0; hIndex < thresholdImage.getHeight(); hIndex ++)
+		for(int hIndex = 0; hIndex < userImage.getHeight(); hIndex ++)
 		{
-			for(int wIndex = 0; wIndex < thresholdImage.getWidth(); wIndex ++)
+			for(int wIndex = 0; wIndex < userImage.getWidth(); wIndex ++)
 			{
-				ofColor color = thresholdImage.getPixelsRef().getColor(wIndex, hIndex);
+				ofColor color = userImage.getPixelsRef().getColor(wIndex, hIndex);
 
 				if(color.r == 0 && color.g == 0 && color.b == 0)
 				{
@@ -162,15 +204,25 @@ void testApp::draw()
 	ofBackground(100, 100, 100);
 
 	ofEnableAlphaBlending();
-	ColorImage.draw(0, 10, 640, 480);
+	//ColorImage.draw(0, 10, 640, 480);
 
 	//ColorPlayer.flagImageChanged();
 	ColorPlayer.draw(1280, 10, 640, 480);
 
 	ofDisableAlphaBlending();
 
-	// threshold Image
-	thresholdImage.draw(640, 10, 640, 480);
+	// depth Image
+	depthImage.draw(0, 10, DepthWidth, DepthHeight);
+
+	// user image
+	userImage.draw(680, 10, DepthWidth, DepthHeight);
+
+	// 
+	// draw the ofx...
+	ofxCvKinectRGB.draw(0, 500, 320, 240);
+	ofxCvKinectUsers.draw(340, 500, 320, 240);
+	ofxCvKinectMask.draw(680, 500, 320, 240);
+	ofxCvKinectAlpha.draw(1020, 500, 320 240)
 
 	// draw instructions
 	ofSetColor(255, 255, 255);
@@ -207,14 +259,14 @@ void testApp::keyPressed (int key)
 	case OF_KEY_LEFT:
 		{
 			threshold --;
-			thresholdImage.threshold(threshold);
+			depthImage.threshold(threshold);
 
 			break;
 		}
 	case OF_KEY_RIGHT:
 		{
 			threshold ++;
-			thresholdImage.threshold(threshold);
+			depthImage.threshold(threshold);
 
 			break;
 		}
@@ -336,8 +388,22 @@ void testApp::MappingColorPlayer(ofImage & player)
 //////////////////////////////////////////////////////////////////////////
 void testApp::Processing()
 {
-	double fInpaintRadius = 3;
-	int nInpaintUsersDilateSteps = 3; // three times
+	double fInpaintRadius = 2;
+	int nInpaintUsersDilateSteps = 2; // three times
+
+	float fInpaintDepthValueNonUsers = 1.55f;
+
+	float fInpaintResizeScale = 0.8f;
+
+	// set the depth pixels
+	cv::Mat ofxMatKinectDepth(DepthWidth, DepthHeight, CV_16UC1, KinectSensor.getDistancePixels().getPixels());
+	
+
+	cv::Mat ofxMatKinectUsers(ofxCvKinectUsers.getCvImage());
+	cv::Mat ofxMatKinectMask(ofxCvKinectMask.getCvImage());
+	cv::Mat ofxMatKinectAlpha(ofxCvKinectAlpha.getCvImage());
+	cv::Mat ofxMatKinectRGB(ofxCvKinectRGB.getCvImage());
+
 
 	if(0.0001f < fInpaintRadius)
 	{
@@ -345,8 +411,48 @@ void testApp::Processing()
 		if(0 < nInpaintUsersDilateSteps)
 		{
 			// 对Player单通道图进行膨胀
-
+			cv::Mat matUsersDilated;
+			cv::dilate(ofxMatKinectUsers, matUsersDilated, cv::Mat(), cv::Point(-1, -1), nInpaintUsersDilateSteps);
+			matUsersDilated.copyTo(ofxMatKinectUsers);
 		}
+
+
+		// Inpaint manually unknown z pixels outside users buffer with a constant value and discard them from the opencv inpaint
+		unsigned short usDepthValue = (unsigned short)(fInpaintDepthValueNonUsers * 1000.0f);
+
+		for (int row = 0; row < ofxMatKinectUsers.rows; ++ row)
+		{
+			unsigned char * userRow = ofxMatKinectUsers.ptr<unsigned char>(row);
+			unsigned char *	maskRow = ofxMatKinectMask.ptr<unsigned char>(row);
+			unsigned short * depthRow = ofxMatKinectDepth.ptr<unsigned short>(row);
+
+			for (int col = 0; col < ofxMatKinectUsers.cols; ++ col)
+			{
+				if(0 != maskRow[col] && 0 != userRow[col])
+				{
+					depthRow[col] = usDepthValue;
+					maskRow[col] = 250;
+				}
+			}
+		}
+
+		////// Inpaint Z-index
+		////if(0.999f > fInpaintResizeScale)
+		////{
+		////	cv::Mat kinectDepth8;
+		////	cv::Mat kinectDepth16;
+		////	cv::Mat resizedDepth;
+		////	cv::Mat resizedMask;
+		////	cv::Mat resizedProcessed;
+		////	cv::Mat processedResizedBack;
+		////	cv::Mat blurred;
+
+		////	cv::Point minLoc(0);
+		////	double minVal, maxVal;
+
+		////	// Get the min and max distance in depth image
+		////	cv::minMaxLoc(ofxMatKinectDepth, &minVal, &maxVal, NULL, NULL);
+		////}
 	}
 }
 
@@ -398,7 +504,7 @@ bool testApp::Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInp
 
 	// Inpaint z and normal filter
 
-	if(fInpaintRadius > 0.0001f) //double类型与0比较
+	if(fInpaintRadius > 0.0001f) 
 	{
 		// Dilate users buffer
 
@@ -644,7 +750,7 @@ bool testApp::Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInp
 			matStructuringElement = cv::getStructuringElement(cv::MORPH_ELLIPSE, cvSize(nAlphaErodeDilateKernelSize, nAlphaErodeDilateKernelSize));
 		}
 
-		if((nAlphaErodeSteps > 0 || nAlphaDilateSteps > 0) && IS_ONE(fAlphaErodeDilateScale) == false)
+		if((nAlphaErodeSteps > 0 || nAlphaDilateSteps > 0) /*&& IS_ONE(fAlphaErodeDilateScale) == false*/)
 		{
 			cv::Mat matErodeDilateScaled;
 			cv::resize(matKinectAlpha, matErodeDilateScaled, cvSize(g_nDepthWidth * fAlphaErodeDilateScale, g_nDepthHeight * fAlphaErodeDilateScale), 0.0f, 0.0f, cv::INTER_LINEAR);
@@ -687,7 +793,7 @@ bool testApp::Kinect_ProcessDepthAndAlphaPixels(float fInpaintRadius, float fInp
 		{
 			bool bAlphaMedianResized = false;
 
-			if(IS_ONE(fMedianFilterAlphaScale) == false)
+			/*if(IS_ONE(fMedianFilterAlphaScale) == false)*/
 			{
 				cv::Mat matScaled;
 				cv::resize(matKinectAlpha, matScaled, cvSize(g_nDepthWidth * fMedianFilterAlphaScale, g_nDepthHeight * fMedianFilterAlphaScale), 0.0f, 0.0f, cv::INTER_LINEAR);

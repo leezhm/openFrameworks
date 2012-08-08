@@ -5,6 +5,8 @@
 #include "ofxOpenCv.h"
 #include "ofxXmlSettings.h"
 
+#include "opencv2/opencv.hpp"
+
 class testApp : public ofBaseApp
 {
 public:
@@ -38,11 +40,14 @@ private:
 	ofxKinectNui KinectSensor;
 
 	// Color Image 
-	ofImage ColorImage;
+	ofxCvColorImage ColorImage;
 
 	
 	int ColorWidth ;
 	int ColorHeight;
+
+	int DepthWidth;
+	int DepthHeight;
 
 	// Label Image
 	//
@@ -51,7 +56,8 @@ private:
 	//
 	//ofxCvGrayscaleImage LabelImage;
 
-	ofxCvGrayscaleImage thresholdImage;
+	ofxCvGrayscaleImage depthImage;
+	ofxCvGrayscaleImage userImage;
 
 	// Player Image
 	ofxCvColorImage ColorPlayer;
@@ -69,4 +75,20 @@ private:
 
 	// xml config file
 	ofxXmlSettings xmlSetting;
+
+
+
+private:
+	//////////////////////////////////////////////////////////////////////////
+	//
+	//
+	//
+	//////////////////////////////////////////////////////////////////////////
+	ofxCvColorImage ofxCvKinectRGB;
+	ofxCvGrayscaleImage ofxCvKinectUsers;
+	
+	ofxCvShortImage ofxCvKinectDepth;
+
+	ofxCvGrayscaleImage ofxCvKinectMask;
+	ofxCvGrayscaleImage ofxCvKinectAlpha;
 };
