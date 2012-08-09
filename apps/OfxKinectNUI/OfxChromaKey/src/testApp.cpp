@@ -7,6 +7,8 @@ void testApp::setup()
 {
 	ofSetLogLevel(OF_LOG_VERBOSE);
 
+	ofSetVerticalSync(true);
+
 	// Set Frame Rate
 	ofSetFrameRate(60);
 
@@ -113,6 +115,10 @@ void testApp::setup()
 
 
 	//////////////////////////////////////////////////////////////////////////
+	gui.setup("Adjust Panel");
+	gui.add(filled.setup("bFill", true));
+	gui.add(radius.setup("MedianFilter", 140, 10, 300));
+
 	// Do some testing
 	//////////////////////////////////////////////////////////////////////////
 	////cv::Mat doMat(6, 8, CV_16UC1, cv::Scalar::all(8));
@@ -258,6 +264,8 @@ void testApp::draw()
 		<< "press Home and End to change the near clipping distance: " << nearClipping << " mm" << endl
 		<< "press 's' or 'S' to save the near/ far clipping distance to xml file." << endl;
 	ofDrawBitmapString(reportStream.str(), 10, 820);
+
+	gui.draw();
 }
 
 

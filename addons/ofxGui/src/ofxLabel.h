@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "ofParameter.h"
 #include "ofxBaseGui.h"

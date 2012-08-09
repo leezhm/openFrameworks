@@ -4,6 +4,7 @@
 #include "ofMain.h"
 #include "ofxOpenCv.h"
 #include "ofxXmlSettings.h"
+#include "ofxGui.h"
 
 #include "opencv2/opencv.hpp"
 
@@ -85,4 +86,11 @@ private:
 
 	ofxCvGrayscaleImage ofxCvKinectMask;
 	ofxCvGrayscaleImage ofxCvKinectAlpha;
+
+
+	//////////////////////////////////////////////////////////////////////////
+	ofxPanel gui;	// the gui panel
+
+	ofxToggle filled;
+	ofxFloatSlider radius;
 };
