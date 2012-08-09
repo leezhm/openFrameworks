@@ -24,4 +24,5 @@
 /maczli/*/.cproject
 /maczli/*/.project
 /maczli/*/.settings/
-
+/maczli/*.pbxproj
+/maczli/*.xcscheme

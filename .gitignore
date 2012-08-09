@@ -39,6 +39,10 @@ Release*/
 xcuserdata
 *.xcworkspace
 
+# added by zhengmin.li
+*.xcscheme
+*.pbxproj
+
 #Code::Blocks
 *.depend
 *.layout
