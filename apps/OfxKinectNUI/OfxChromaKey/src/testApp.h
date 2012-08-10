@@ -93,4 +93,7 @@ private:
 
 	ofxToggle filled;
 	ofxFloatSlider radius;
+
+
+	ofImage resultImage;
 };
