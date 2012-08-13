@@ -2,6 +2,38 @@
 
 #include <iostream>
 
+//////////////////////////////////////////////////////////////////////////
+
+double fInpaintRadius = 2.5;
+int nInpaintUsersDilateSteps = 3; // three times
+
+int nAlphaErodeSteps = 2;
+int nAlphaDilateSteps = 2;
+
+int nAlphaOffsetX = 1;
+int nAlphaOffsetY = 1;
+
+float fInpaintDepthValueNonUsers = 1.6f;
+float fAlphaErodeDilateScale = 0.8f;
+float fMedianFilterAlphaScale = 0.8f;
+
+float fInpaintResizeScale = 0.98f;
+
+int nMedianFilterDepthSize = 3; // kernel size for median blur
+int nMedianFilterAlphaSize = 3;
+int nAlphaBlurFilterSize = 3;
+
+int nAlphaErodeDilateKernelSize = 3;
+int nAlphaErodeDilateKernelType = 2;
+
+bool bProcessed = false;
+
+float gDepthRangeStartMeters = 1.4f;
+float gDepthRangeEndMeters = 1.8f;
+
+//////////////////////////////////////////////////////////////////////////
+
+
 //--------------------------------------------------------------
 void testApp::setup()
 {
@@ -118,8 +150,28 @@ void testApp::setup()
 
 	//////////////////////////////////////////////////////////////////////////
 	gui.setup("Adjust Panel");
-	gui.add(filled.setup("bFill", true));
-	gui.add(radius.setup("MedianFilter", 140, 10, 300));
+	gui.add(InpaintRadiusSlider.setup("Radius", xmlSetting.getValue("KINECT:PROCESSING:INPAINT:RADIUS", 2.8), 0.01, 100));
+	gui.add(InpaintResizeScaleSlider.setup("ResizeScale", xmlSetting.getValue("KINECT:PROCESSING:INPAINT:RESIZESCALE", 800), 10, 998));
+	gui.add(InpaintUsersDilateStepSlider.setup("UsersDilateStep", xmlSetting.getValue("KINECT:PROCESSING:INPAINT:USERDILATESTEP", 2), 1, 10));
+	
+	gui.add(InpaintDepthValueNonUserSlider.setup("DepthValueNonUser", xmlSetting.getValue("KINECT:PROCESSING:INPAINT:DEPTHNONUSER", 1.75), 1.5, 3.0));
+	gui.add(DepthRangeStartMeters.setup("RangeStart", xmlSetting.getValue("KINECT:PROCESSING:DEPTH:START", 1.6), 1.2, 2.0));
+	gui.add(DepthRangeEndMeters.setup("RangeEnd", xmlSetting.getValue("KINECT:PROCESSING:DEPTH:END", 1.9), 1.4, 2.4));
+	
+	gui.add(MedianFilterDepthSizeSlider.setup("MedianFilterDepthSize", xmlSetting.getValue("KINECT:PROCESSING:MEDIAN:DEPTHSIZE", 3), 3, 9));
+	gui.add(MedianFilterAlphaSizeSlider.setup("MedianFilterAlphaSize", xmlSetting.getValue("KINECT:PROCESSING:MEDIAN:ALPHASIZE", 3), 3, 9));
+	
+	gui.add(AlphaBlurFilterSizeSlider.setup("AlphaBlurFilterSize", xmlSetting.getValue("KINECT:PROCESSING:ALPHA:BLURSIZE", 3), 3, 9));
+	gui.add(AlphaErodeDilateKernelSizeSlider.setup("AlphaErodeDilateKernelSize", xmlSetting.getValue("KINECT:PROCESSING:ALPHA:EDKERNELSIZE", 2), 1, 9));
+
+	gui.add(AlphaErodeStepSlider.setup("AlphaErodeStep", xmlSetting.getValue("KINECT:PROCESSING:ALPHA:ERODESTEP", 2), 1, 10));
+	gui.add(AlphaDilateStepSlider.setup("AlphaDilateStep", xmlSetting.getValue("KINECT:PROCESSING:ALPHA:DILATESTEP", 2), 1, 10));
+
+	gui.add(AlphaOffSetXSlider.setup("OffSetX", xmlSetting.getValue("KINECT:PROCESSING:ALPHA:OFFSETX", 1), -10, 10));
+	gui.add(AlphaOffSetYSlider.setup("OffSetY", xmlSetting.getValue("KINECT:PROCESSING:ALPHA:OFFSETY", 1), -10, 10));
+
+	gui.add(AlphaErodeDilateScaleSlider.setup("AlphaErodeDilateScale", xmlSetting.getValue("KINECT:PROCESSING:ALPHA:EDSCALE", 40), 10, 90));
+	gui.add(MedianFilterAlphaScaleSlider.setup("MedianFilterAlphaScale", xmlSetting.getValue("KINECT:PROCESSING:MEDIAN:ALPHASCALE", 40), 10, 90));
 
 	// Do some testing
 	//////////////////////////////////////////////////////////////////////////
@@ -154,6 +206,44 @@ void testApp::setup()
 //--------------------------------------------------------------
 void testApp::update()
 {
+	//std::cout<<"radius -> "<<fInpaintResizeScaleSlider<<std::endl;
+	fInpaintResizeScale = InpaintResizeScaleSlider / 1000.0f;
+	fInpaintRadius = InpaintRadiusSlider;
+	nInpaintUsersDilateSteps = InpaintUsersDilateStepSlider;
+
+	fInpaintDepthValueNonUsers = InpaintDepthValueNonUserSlider;
+	gDepthRangeStartMeters = DepthRangeStartMeters;
+	gDepthRangeEndMeters = DepthRangeEndMeters;
+
+	if(((MedianFilterDepthSizeSlider % 2) == 0) && (MedianFilterDepthSizeSlider > 0))
+	{
+		MedianFilterDepthSizeSlider--;
+	}
+	nMedianFilterDepthSize = MedianFilterDepthSizeSlider;
+
+	if(((MedianFilterAlphaSizeSlider % 2) == 0) && (MedianFilterAlphaSizeSlider > 0))
+	{
+		MedianFilterAlphaSizeSlider--;
+	}
+	nMedianFilterAlphaSize = MedianFilterAlphaSizeSlider;
+
+	if(((AlphaBlurFilterSizeSlider % 2) == 0) && (AlphaBlurFilterSizeSlider > 0))
+	{
+		AlphaBlurFilterSizeSlider--;
+	}
+	nAlphaBlurFilterSize = AlphaBlurFilterSizeSlider;
+
+	nAlphaErodeDilateKernelSize = AlphaErodeDilateKernelSizeSlider;
+
+	nAlphaErodeSteps = AlphaErodeStepSlider;
+	nAlphaDilateSteps = AlphaDilateStepSlider;
+
+	nAlphaOffsetX = AlphaOffSetXSlider;
+	nAlphaOffsetY = AlphaOffSetYSlider;
+
+	fAlphaErodeDilateScale = AlphaErodeDilateScaleSlider / 50.0f;
+	fMedianFilterAlphaScale = MedianFilterAlphaScaleSlider / 50.0f;
+
 	// update the kinect sensor
 	KinectSensor.update();
 
@@ -209,7 +299,7 @@ void testApp::update()
 void testApp::draw()
 {
 	// Set background
-	ofBackground(100, 100, 100);
+	ofBackgroundGradient(ofColor::white, ofColor::gray);
 
 	ofEnableAlphaBlending();
 	//ColorImage.draw(0, 10, 640, 480);
@@ -376,6 +466,31 @@ void testApp::keyPressed (int key)
 			xmlSetting.setValue("KINECT:CLIPPING:NEAR", nearClipping);
 			xmlSetting.setValue("KINECT:CLIPPING:FAR", farClipping);
 			xmlSetting.setValue("KINECT:OPENCV:THRESHOLD", threshold);
+
+			xmlSetting.setValue("KINECT:PROCESSING:INPAINT:RADIUS", fInpaintRadius);
+			xmlSetting.setValue("KINECT:PROCESSING:INPAINT:RESIZESCALE", fInpaintResizeScale * 1000.0f);
+			xmlSetting.setValue("KINECT:PROCESSING:INPAINT:USERDILATESTEP", nInpaintUsersDilateSteps);
+
+			xmlSetting.setValue("KINECT:PROCESSING:INPAINT:DEPTHNONUSER", fInpaintDepthValueNonUsers);
+			xmlSetting.setValue("KINECT:PROCESSING:DEPTH:START", gDepthRangeStartMeters);
+			xmlSetting.setValue("KINECT:PROCESSING:DEPTH:END", gDepthRangeEndMeters);
+
+			xmlSetting.setValue("KINECT:PROCESSING:MEDIAN:DEPTHSIZE", nMedianFilterDepthSize);
+			xmlSetting.setValue("KINECT:PROCESSING:MEDIAN:ALPHASIZE", nMedianFilterAlphaSize);
+
+			xmlSetting.setValue("KINECT:PROCESSING:ALPHA:BLURSIZE", nAlphaBlurFilterSize);
+			xmlSetting.setValue("KINECT:PROCESSING:ALPHA:EDKERNELSIZE", nAlphaErodeDilateKernelSize);
+
+			xmlSetting.setValue("KINECT:PROCESSING:ALPHA:ERODESTEP", nAlphaErodeSteps);
+			xmlSetting.setValue("KINECT:PROCESSING:ALPHA:DILATESTEP", nAlphaDilateSteps);
+
+			xmlSetting.setValue("KINECT:PROCESSING:ALPHA:OFFSETX", nAlphaOffsetX);
+			xmlSetting.setValue("KINECT:PROCESSING:ALPHA:OFFSETY", nAlphaOffsetY);
+
+			xmlSetting.setValue("KINECT:PROCESSING:ALPHA:EDSCALE", fAlphaErodeDilateScale * 50.0f);
+			xmlSetting.setValue("KINECT:PROCESSING:MEDIAN:ALPHASCALE", fMedianFilterAlphaScale * 50.0f);
+
+
 			xmlSetting.saveFile("config.xml");
 		}
 		
@@ -420,37 +535,11 @@ void testApp::MappingColorPlayer(ofImage & player)
 //	depth image ¥¶¿Ì
 //
 //////////////////////////////////////////////////////////////////////////
+
 void testApp::Processing()
 {
-	double fInpaintRadius = 2.5;
-	int nInpaintUsersDilateSteps = 3; // three times
-
-	int nAlphaErodeSteps = 2;
-	int nAlphaDilateSteps = 2;
-
-	int nAlphaOffsetX = 1;
-	int nAlphaOffsetY = 1;
-
-	float fInpaintDepthValueNonUsers = 1.6f;
-	float fAlphaErodeDilateScale = 0.8f;
-	float fMedianFilterAlphaScale = 0.8f;
-
-	float fInpaintResizeScale = 0.8f;
-
-	int nMeidanFilterDepthSize = 3; // kernel size for median blur
-	int nMedianFilterAlphaSize = 3;
-	int nAlphaBlurFilterSize = 3;
-
-	int nAlphaErodeDilateKernelSize = 3;
-
-	bool bProcessed = false;
-
-	float gDepthRangeStartMeters = 1.4f;
-	float gDepthRangeEndMeters = 1.8f;
-
 	// set the depth pixels
 	cv::Mat ofxMatKinectDepth(DepthWidth, DepthHeight, CV_16UC1, KinectSensor.getDistancePixels().getPixels());
-	
 
 	cv::Mat ofxMatKinectUsers(ofxCvKinectUsers.getCvImage());
 	cv::Mat ofxMatKinectMask(ofxCvKinectMask.getCvImage());
@@ -528,11 +617,11 @@ void testApp::Processing()
 			kinectDepth16.copyTo(ofxMatKinectDepth, (ofxMatKinectMask == 255));
 
 			// Apply median filter to the result
-			if(0 < nMeidanFilterDepthSize)
+			if(0 < nMedianFilterDepthSize)
 			{
 				// this is the main trick, apply median to mask, not to depth values
 				ofxMatKinectDepth.convertTo(kinectDepth8, CV_8UC1, 255.0 / maxVal);
-				cv::medianBlur(kinectDepth8, blurred, nMeidanFilterDepthSize);
+				cv::medianBlur(kinectDepth8, blurred, nMedianFilterDepthSize);
 				blurred.convertTo(ofxMatKinectProcessed, CV_16UC1, maxVal / 255.0);
 			}
 			else
@@ -543,7 +632,7 @@ void testApp::Processing()
 			bProcessed = true;
 		}
 	}
-	else if (0 < nMeidanFilterDepthSize)
+	else if (0 < nMedianFilterDepthSize)
 	{
 		// only median filter for the depth, main trick
 		double maxVal, minVal;
@@ -553,7 +642,7 @@ void testApp::Processing()
 		cv::Mat kinectDepth8;
 		
 		ofxMatKinectDepth.convertTo(kinectDepth8, CV_8UC1, 255.0 / maxVal);
-		cv::medianBlur(kinectDepth8, blurred, nMeidanFilterDepthSize);
+		cv::medianBlur(kinectDepth8, blurred, nMedianFilterDepthSize);
 		blurred.convertTo(ofxMatKinectProcessed, CV_16UC1, maxVal / 255.0);
 
 		bProcessed = true;
@@ -590,126 +679,126 @@ void testApp::Processing()
 		}
 	}
 
-	////// Offset alpha mask
-	////// this is the main other thing to get the the depth to align properly to color
-	////if(0 != nAlphaOffsetX || 0 != nAlphaOffsetY)
-	////{
-	////	cv::Point2f srcPoints[3], dstPoints[3];
+	// Offset alpha mask
+	// this is the main other thing to get the the depth to align properly to color
+	if(0 != nAlphaOffsetX || 0 != nAlphaOffsetY)
+	{
+		cv::Point2f srcPoints[3], dstPoints[3];
 
-	////	srcPoints[0].x = 0;
-	////	srcPoints[0].y = 0;
-	////	srcPoints[1].x = DepthWidth;
-	////	srcPoints[1].y = 0;
-	////	srcPoints[2].x = 0;
-	////	srcPoints[2].y = DepthHeight;
+		srcPoints[0].x = 0;
+		srcPoints[0].y = 0;
+		srcPoints[1].x = DepthWidth;
+		srcPoints[1].y = 0;
+		srcPoints[2].x = 0;
+		srcPoints[2].y = DepthHeight;
 
-	////	float fAlphaScale = 1.0f;
-	////	
-	////	for (int i = 0; i < 3; ++ i)
-	////	{
-	////		dstPoints[i].x = (((srcPoints[i].x - (DepthWidth  / 2)) * fAlphaScale) + (DepthWidth  / 2)) + nAlphaOffsetX;
-	////		dstPoints[i].y = (((srcPoints[i].y - (DepthHeight / 2)) * fAlphaScale) + (DepthHeight / 2)) + nAlphaOffsetY;
-	////	}
+		float fAlphaScale = 1.0f;
+		
+		for (int i = 0; i < 3; ++ i)
+		{
+			dstPoints[i].x = (((srcPoints[i].x - (DepthWidth  / 2)) * fAlphaScale) + (DepthWidth  / 2)) + nAlphaOffsetX;
+			dstPoints[i].y = (((srcPoints[i].y - (DepthHeight / 2)) * fAlphaScale) + (DepthHeight / 2)) + nAlphaOffsetY;
+		}
 
-	////	cv::Mat affine;
-	////	cv::Mat warped;
-	////	affine = cv::getAffineTransform(srcPoints, dstPoints);
-	////	cv::warpAffine(ofxMatKinectAlpha, warped, affine, ofxMatKinectAlpha.size());
-	////	warped.copyTo(ofxMatKinectAlpha);
-	////	
-	////	bProcessed = true;
-	////}
+		cv::Mat affine;
+		cv::Mat warped;
+		affine = cv::getAffineTransform(srcPoints, dstPoints);
+		cv::warpAffine(ofxMatKinectAlpha, warped, affine, ofxMatKinectAlpha.size());
+		warped.copyTo(ofxMatKinectAlpha);
+		
+		bProcessed = true;
+	}
 
-	////// Erode & Dilate
-	////bool bErodeDilateResize = false;
-	////cv::Mat structuringElement = cv::getStructuringElement(cv::MORPH_CROSS, cvSize(nAlphaErodeDilateKernelSize, nAlphaErodeDilateKernelSize));
+	// Erode & Dilate
+	bool bErodeDilateResize = false;
+	cv::Mat structuringElement = cv::getStructuringElement(cv::MORPH_CROSS, cvSize(nAlphaErodeDilateKernelSize, nAlphaErodeDilateKernelSize));
 
-	////if(0 == nAlphaErodeDilateKernelSize)
-	////{
-	////	structuringElement = cv::getStructuringElement(cv::MORPH_CROSS, cvSize(nAlphaErodeDilateKernelSize, nAlphaErodeDilateKernelSize));
-	////}
-	////else if (1 == nAlphaErodeDilateKernelSize)
-	////{
-	////	structuringElement = cv::getStructuringElement(cv::MORPH_RECT, cvSize(nAlphaErodeDilateKernelSize, nAlphaErodeDilateKernelSize));
-	////}
-	////else if (2 == nAlphaErodeDilateKernelSize)
-	////{
-	////	structuringElement = cv::getStructuringElement(cv::MORPH_ELLIPSE, cvSize(nAlphaErodeDilateKernelSize, nAlphaErodeDilateKernelSize));
-	////}
+	if(0 == nAlphaErodeDilateKernelType)
+	{
+		structuringElement = cv::getStructuringElement(cv::MORPH_CROSS, cvSize(nAlphaErodeDilateKernelSize, nAlphaErodeDilateKernelSize));
+	}
+	else if (1 == nAlphaErodeDilateKernelType)
+	{
+		structuringElement = cv::getStructuringElement(cv::MORPH_RECT, cvSize(nAlphaErodeDilateKernelSize, nAlphaErodeDilateKernelSize));
+	}
+	else if (2 == nAlphaErodeDilateKernelType)
+	{
+		structuringElement = cv::getStructuringElement(cv::MORPH_ELLIPSE, cvSize(nAlphaErodeDilateKernelSize, nAlphaErodeDilateKernelSize));
+	}
 
-	////if((nAlphaErodeSteps > 0 || nAlphaDilateSteps > 0) && fAlphaErodeDilateScale != 1.0f)
-	////{
-	////	cv::Mat erodeDilateScale;
-	////	cv::resize(ofxMatKinectAlpha, erodeDilateScale, cvSize(DepthWidth * fAlphaErodeDilateScale, DepthHeight * fAlphaErodeDilateScale),
-	////			   0.0f, 0.0f, cv::INTER_LINEAR);
-	////	erodeDilateScale.copyTo(ofxMatKinectAlpha);
+	if((nAlphaErodeSteps > 0 || nAlphaDilateSteps > 0) && fAlphaErodeDilateScale != 1.0f)
+	{
+		cv::Mat erodeDilateScale;
+		cv::resize(ofxMatKinectAlpha, erodeDilateScale, cvSize(DepthWidth * fAlphaErodeDilateScale, DepthHeight * fAlphaErodeDilateScale),
+				   0.0f, 0.0f, cv::INTER_LINEAR);
+		erodeDilateScale.copyTo(ofxMatKinectAlpha);
 
-	////	bErodeDilateResize = true;
-	////}
+		bErodeDilateResize = true;
+	}
 
-	////if(0 < nAlphaErodeSteps && 0 < nAlphaDilateSteps)
-	////{
-	////	cv::Mat intermediate;
-	////	cv::erode(ofxMatKinectAlpha, intermediate, structuringElement, cv::Point(-1, -1), nAlphaErodeSteps);
-	////	cv::dilate(intermediate, ofxMatKinectAlpha, structuringElement, cv::Point(-1, -1), nAlphaDilateSteps);
+	if(0 < nAlphaErodeSteps && 0 < nAlphaDilateSteps)
+	{
+		cv::Mat intermediate;
+		cv::erode(ofxMatKinectAlpha, intermediate, structuringElement, cv::Point(-1, -1), nAlphaErodeSteps);
+		cv::dilate(intermediate, ofxMatKinectAlpha, structuringElement, cv::Point(-1, -1), nAlphaDilateSteps);
 
-	////	bProcessed = true;
-	////}
-	////else if (0 < nAlphaErodeSteps)
-	////{
-	////	cv::Mat erode;
-	////	cv::dilate(ofxMatKinectAlpha, erode, structuringElement, cv::Point(-1, -1), nAlphaErodeSteps);
-	////	erode.copyTo(ofxMatKinectAlpha);
+		bProcessed = true;
+	}
+	else if (0 < nAlphaErodeSteps)
+	{
+		cv::Mat erode;
+		cv::dilate(ofxMatKinectAlpha, erode, structuringElement, cv::Point(-1, -1), nAlphaErodeSteps);
+		erode.copyTo(ofxMatKinectAlpha);
 
-	////	bProcessed = true;
-	////} 
-	////else if(0 < nAlphaDilateSteps)
-	////{
-	////	cv::Mat dilate;
-	////	cv::dilate(ofxMatKinectAlpha, dilate, structuringElement, cv::Point(-1, -1), nAlphaDilateSteps);
-	////	dilate.copyTo(ofxMatKinectAlpha);
+		bProcessed = true;
+	} 
+	else if(0 < nAlphaDilateSteps)
+	{
+		cv::Mat dilate;
+		cv::dilate(ofxMatKinectAlpha, dilate, structuringElement, cv::Point(-1, -1), nAlphaDilateSteps);
+		dilate.copyTo(ofxMatKinectAlpha);
 
-	////	bProcessed = true;
-	////}
+		bProcessed = true;
+	}
 
-	////if(0 < nMedianFilterAlphaSize)
-	////{
-	////	bool bAlphaMedianResized = false;
-	////	
-	////	if(1.0f != fMedianFilterAlphaScale)
-	////	{
-	////		cv::Mat scaled;
-	////		cv::resize(ofxMatKinectAlpha, scaled, cvSize(DepthWidth * fMedianFilterAlphaScale, DepthHeight * fMedianFilterAlphaScale),
-	////			       0.0f, 0.0f, cv::INTER_LINEAR);
-	////		scaled.copyTo(ofxMatKinectAlpha);
+	if(0 < nMedianFilterAlphaSize)
+	{
+		bool bAlphaMedianResized = false;
+		
+		if(1.0f != fMedianFilterAlphaScale)
+		{
+			cv::Mat scaled;
+			cv::resize(ofxMatKinectAlpha, scaled, cvSize(DepthWidth * fMedianFilterAlphaScale, DepthHeight * fMedianFilterAlphaScale),
+				       0.0f, 0.0f, cv::INTER_LINEAR);
+			scaled.copyTo(ofxMatKinectAlpha);
 
-	////		bAlphaMedianResized = true;
-	////	}
+			bAlphaMedianResized = true;
+		}
 
-	////	cv::Mat filtered;
-	////	cv::medianBlur(ofxMatKinectAlpha, filtered, nMedianFilterAlphaSize);
+		cv::Mat filtered;
+		cv::medianBlur(ofxMatKinectAlpha, filtered, nMedianFilterAlphaSize);
 
-	////	if(bAlphaMedianResized)
-	////	{
-	////		cv::resize(filtered, ofxMatKinectAlpha, cvSize(DepthWidth, DepthHeight), 0.0f, 0.0f, cv::INTER_LINEAR);
-	////	}
-	////	else
-	////	{
-	////		filtered.copyTo(ofxMatKinectAlpha);
-	////	}
+		if(bAlphaMedianResized)
+		{
+			cv::resize(filtered, ofxMatKinectAlpha, cvSize(DepthWidth, DepthHeight), 0.0f, 0.0f, cv::INTER_LINEAR);
+		}
+		else
+		{
+			filtered.copyTo(ofxMatKinectAlpha);
+		}
 
-	////	bProcessed = true;
-	////}
+		bProcessed = true;
+	}
 
-	////// Blur Alpha
-	////if(0 < nAlphaBlurFilterSize)
-	////{
-	////	cv::Mat blurred;
-	////	cv::GaussianBlur(ofxMatKinectAlpha, blurred, cvSize(nAlphaBlurFilterSize, nAlphaBlurFilterSize), 0.0f, 0.0f);
-	////	blurred.copyTo(ofxMatKinectAlpha);
+	// Blur Alpha
+	if(0 < nAlphaBlurFilterSize)
+	{
+		cv::Mat blurred;
+		cv::GaussianBlur(ofxMatKinectAlpha, blurred, cvSize(nAlphaBlurFilterSize, nAlphaBlurFilterSize), 0.0f, 0.0f);
+		blurred.copyTo(ofxMatKinectAlpha);
 
-	////	bProcessed = true;
-	////}
+		bProcessed = true;
+	}
 
 
 	ofColor color;

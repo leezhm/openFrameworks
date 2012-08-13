@@ -3,7 +3,33 @@
         <NEAR>100</NEAR>
         <FAR>12000</FAR>
     </CLIPPING>
-	<OPENCV>
-		<THRESHOLD>25</THRESHOLD>
-	</OPENCV>
+    <OPENCV>
+        <THRESHOLD>25</THRESHOLD>
+    </OPENCV>
+    <PROCESSING>
+        <INPAINT>
+            <RADIUS>18.0082</RADIUS>
+            <USERDILATESTEP>6</USERDILATESTEP>
+            <RESIZESCALE>800</RESIZESCALE>
+            <DEPTHNONUSER>1.75</DEPTHNONUSER>
+        </INPAINT>
+        <DEPTH>
+            <START>1.408</START>
+            <END>1.75</END>
+        </DEPTH>
+        <MEDIAN>
+            <DEPTHSIZE>7</DEPTHSIZE>
+            <ALPHASIZE>7</ALPHASIZE>
+            <ALPHASCALE>64.8</ALPHASCALE>
+        </MEDIAN>
+        <ALPHA>
+            <BLURSIZE>7</BLURSIZE>
+            <ERODESTEP>5</ERODESTEP>
+            <DILATESTEP>2</DILATESTEP>
+            <EDKERNELSIZE>5</EDKERNELSIZE>
+            <OFFSETX>-1</OFFSETX>
+            <OFFSETY>0</OFFSETY>
+            <EDSCALE>38.4</EDSCALE>
+        </ALPHA>
+    </PROCESSING>
 </KINECT>

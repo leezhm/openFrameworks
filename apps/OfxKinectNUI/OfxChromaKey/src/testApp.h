@@ -88,12 +88,35 @@ private:
 	ofxCvGrayscaleImage ofxCvKinectAlpha;
 
 
+	ofImage resultImage;
+
+
+private:
 	//////////////////////////////////////////////////////////////////////////
 	ofxPanel gui;	// the gui panel
 
 	ofxToggle filled;
-	ofxFloatSlider radius;
+	ofxFloatSlider InpaintResizeScaleSlider;
+	ofxFloatSlider InpaintRadiusSlider;
+	ofxIntSlider   InpaintUsersDilateStepSlider;
 
+	ofxFloatSlider InpaintDepthValueNonUserSlider;
+	ofxFloatSlider DepthRangeStartMeters;
+	ofxFloatSlider DepthRangeEndMeters;
 
-	ofImage resultImage;
+	ofxIntSlider MedianFilterDepthSizeSlider;
+	ofxIntSlider MedianFilterAlphaSizeSlider;
+	ofxIntSlider AlphaBlurFilterSizeSlider;
+	
+	ofxIntSlider AlphaErodeDilateKernelSizeSlider;
+
+	ofxIntSlider AlphaErodeStepSlider;
+	ofxIntSlider AlphaDilateStepSlider;
+
+	ofxIntSlider AlphaOffSetXSlider;
+	ofxIntSlider AlphaOffSetYSlider;
+
+	ofxFloatSlider AlphaErodeDilateScaleSlider;
+	ofxFloatSlider MedianFilterAlphaScaleSlider;
+
 };
