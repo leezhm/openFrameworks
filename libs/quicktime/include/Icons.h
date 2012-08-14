@@ -1,4 +1,4 @@
-/*
+﻿/*
      File:       Icons.h
  
      Contains:   Icon Utilities and Icon Services Interfaces.
@@ -18,19 +18,19 @@
 #define __ICONS__
 
 #ifndef __MACTYPES__
-#include "MacTypes.h"
+#include <MacTypes.h>
 #endif
 
 #ifndef __QUICKDRAW__
-#include "Quickdraw.h"
+#include <Quickdraw.h>
 #endif
 
 #ifndef __FILES__
-#include "Files.h"
+#include <Files.h>
 #endif
 
 #ifndef __CODEFRAGMENTS__
-#include "CodeFragments.h"
+#include <CodeFragments.h>
 #endif
 
 
@@ -1481,5 +1481,3 @@ WriteIconFile                   (IconFamilyHandle       iconFamily,
 #endif
 
 #endif /* __ICONS__ */
-
-
