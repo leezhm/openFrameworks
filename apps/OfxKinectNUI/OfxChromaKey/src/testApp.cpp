@@ -167,8 +167,8 @@ void testApp::setup()
 	gui.add(AlphaErodeStepSlider.setup("AlphaErodeStep", xmlSetting.getValue("KINECT:PROCESSING:ALPHA:ERODESTEP", 2), 1, 10));
 	gui.add(AlphaDilateStepSlider.setup("AlphaDilateStep", xmlSetting.getValue("KINECT:PROCESSING:ALPHA:DILATESTEP", 2), 1, 10));
 
-	gui.add(AlphaOffSetXSlider.setup("OffSetX", xmlSetting.getValue("KINECT:PROCESSING:ALPHA:OFFSETX", 1), -10, 10));
-	gui.add(AlphaOffSetYSlider.setup("OffSetY", xmlSetting.getValue("KINECT:PROCESSING:ALPHA:OFFSETY", 1), -10, 10));
+	gui.add(AlphaOffSetXSlider.setup("OffSetX", xmlSetting.getValue("KINECT:PROCESSING:ALPHA:OFFSETX", 1), -20, 20));
+	gui.add(AlphaOffSetYSlider.setup("OffSetY", xmlSetting.getValue("KINECT:PROCESSING:ALPHA:OFFSETY", 1), -20, 20));
 
 	gui.add(AlphaErodeDilateScaleSlider.setup("AlphaErodeDilateScale", xmlSetting.getValue("KINECT:PROCESSING:ALPHA:EDSCALE", 40), 10, 90));
 	gui.add(MedianFilterAlphaScaleSlider.setup("MedianFilterAlphaScale", xmlSetting.getValue("KINECT:PROCESSING:MEDIAN:ALPHASCALE", 40), 10, 90));
