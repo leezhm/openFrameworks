@@ -3,6 +3,35 @@
 #include <iostream>
 
 //////////////////////////////////////////////////////////////////////////
+#pragma once
+#ifdef _DEBUG
+#define MEMORY_CHECK   new( _CLIENT_BLOCK, __FILE__, __LINE__)
+#else
+#define MEMORY_CHECK
+#endif
+
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
+#ifdef _DEBUG
+#define new MEMORY_CHECK
+#endif
+
+void Exit()
+{
+	int i = _CrtDumpMemoryLeaks();
+
+#ifdef _WINDOWS
+#include <afx.h>
+	assert(0 == i);
+#endif
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////////////////
 
 double fInpaintRadius = 2.5;
 int nInpaintUsersDilateSteps = 3; // three times
@@ -37,6 +66,8 @@ float gDepthRangeEndMeters = 1.8f;
 //--------------------------------------------------------------
 void testApp::setup()
 {
+	atexit(Exit);
+
 	ofSetLogLevel(OF_LOG_VERBOSE);
 
 	ofSetVerticalSync(true);
@@ -130,8 +161,8 @@ void testApp::setup()
 
 	// load the config
 	xmlSetting.loadFile("config.xml");
-	nearClipping = xmlSetting.getValue("KINECT:CLIPPING:NEAR", KinectSensor.getNearClippingDistance());
-	farClipping = xmlSetting.getValue("KINECT:CLIPPING:FAR", KinectSensor.getFarClippingDistance());
+	nearClipping = xmlSetting.getValue("KINECT:PROCESSING:DEPTH:START", 1.6) * 1000.0f;
+	farClipping = xmlSetting.getValue("KINECT:PROCESSING:DEPTH:END", 1.9) * 1000.0f;
 	threshold = xmlSetting.getValue("KINECT:OPENCV:THRESHOLD", 25);
 	KinectSensor.setFarClippingDistance(farClipping);
 	KinectSensor.setNearClippingDistance(nearClipping);
@@ -145,7 +176,7 @@ void testApp::setup()
 	ofxCvKinectMask.allocate(DepthWidth, DepthHeight);
 	ofxCvKinectUsers.allocate(DepthWidth, DepthHeight);
 
-	resultImage.allocate(DepthWidth, DepthHeight, OF_IMAGE_COLOR_ALPHA);
+	ofxKinectResult.allocate(DepthWidth, DepthHeight);
 
 
 	//////////////////////////////////////////////////////////////////////////
@@ -155,8 +186,8 @@ void testApp::setup()
 	gui.add(InpaintUsersDilateStepSlider.setup("UsersDilateStep", xmlSetting.getValue("KINECT:PROCESSING:INPAINT:USERDILATESTEP", 2), 1, 10));
 	
 	gui.add(InpaintDepthValueNonUserSlider.setup("DepthValueNonUser", xmlSetting.getValue("KINECT:PROCESSING:INPAINT:DEPTHNONUSER", 1.75), 1.5, 3.0));
-	gui.add(DepthRangeStartMeters.setup("RangeStart", xmlSetting.getValue("KINECT:PROCESSING:DEPTH:START", 1.6), 1.2, 2.0));
-	gui.add(DepthRangeEndMeters.setup("RangeEnd", xmlSetting.getValue("KINECT:PROCESSING:DEPTH:END", 1.9), 1.4, 2.4));
+	gui.add(DepthRangeStartMeters.setup("RangeStart", nearClipping / 1000.0f, 1.2, 2.0));
+	gui.add(DepthRangeEndMeters.setup("RangeEnd", farClipping / 1000.0f, 1.4, 2.4));
 	
 	gui.add(MedianFilterDepthSizeSlider.setup("MedianFilterDepthSize", xmlSetting.getValue("KINECT:PROCESSING:MEDIAN:DEPTHSIZE", 3), 3, 9));
 	gui.add(MedianFilterAlphaSizeSlider.setup("MedianFilterAlphaSize", xmlSetting.getValue("KINECT:PROCESSING:MEDIAN:ALPHASIZE", 3), 3, 9));
@@ -322,7 +353,7 @@ void testApp::draw()
 	ofxCvKinectMask.draw(640, 520, 640, 480);
 	ofxCvKinectAlpha.draw(1280, 520, 640, 480);
 
-	resultImage.draw(0, 520, 640, 480);
+	ofxKinectResult.draw(0, 520, 640, 480);
 
 	// draw title
 	ofSetColor(255, 255, 255);
@@ -354,8 +385,8 @@ void testApp::draw()
 		<< "press 'c' to close the stream and 'o' to open it again, stream is: " << KinectSensor.isOpened() << endl
 		<< "press UP and DOWN to change the tilt angle: " << Angle << " degrees" << endl
 		<< "press UP and DOWN to change the threshold: " << threshold << " degrees" << endl
-		<< "press PgUp and PgDn to change the far clipping distance: " << farClipping << " mm" << endl
-		<< "press Home and End to change the near clipping distance: " << nearClipping << " mm" << endl
+		<< "press PgUp and PgDn to change the far clipping distance: " << farClipping * 1000.0f << " mm" << endl
+		<< "press Home and End to change the near clipping distance: " << nearClipping * 1000.0f << " mm" << endl
 		<< "press 's' or 'S' to save the near/ far clipping distance to xml file." << endl;
 	ofDrawBitmapString(reportStream.str(), 10, 820);
 
@@ -463,8 +494,6 @@ void testApp::keyPressed (int key)
 	case 's':
 	case 'S':
 		{
-			xmlSetting.setValue("KINECT:CLIPPING:NEAR", nearClipping);
-			xmlSetting.setValue("KINECT:CLIPPING:FAR", farClipping);
 			xmlSetting.setValue("KINECT:OPENCV:THRESHOLD", threshold);
 
 			xmlSetting.setValue("KINECT:PROCESSING:INPAINT:RADIUS", fInpaintRadius);
@@ -539,7 +568,12 @@ void testApp::MappingColorPlayer(ofImage & player)
 void testApp::Processing()
 {
 	// set the depth pixels
-	cv::Mat ofxMatKinectDepth(DepthWidth, DepthHeight, CV_16UC1, KinectSensor.getDistancePixels().getPixels());
+	//
+	//	Caution, Mat(int rows, int cols, int type, void* data, size_t step=AUTO_STEP);
+	//
+	//	First param is row and second is col.
+	//
+	cv::Mat ofxMatKinectDepth(DepthHeight, DepthWidth, CV_16UC1, KinectSensor.getDistancePixels().getPixels());
 
 	cv::Mat ofxMatKinectUsers(ofxCvKinectUsers.getCvImage());
 	cv::Mat ofxMatKinectMask(ofxCvKinectMask.getCvImage());
@@ -548,7 +582,7 @@ void testApp::Processing()
 
 	cv::Mat ofxMatKinectProcessed;
 
-	unsigned char * ofxKinectAlphaPixels = new unsigned char[DepthWidth * 4 * DepthHeight];
+	//unsigned char * ofxKinectAlphaPixels = new unsigned char[DepthWidth * 4 * DepthHeight];
 
 	if(0.0001f < fInpaintRadius)
 	{
@@ -572,9 +606,9 @@ void testApp::Processing()
 
 			for (int col = 0; col < ofxMatKinectUsers.cols; ++ col)
 			{
-				if(0 != maskRow[col] && 0 != userRow[col])
+				if(0 != maskRow[col] &&0 != userRow[col])
 				{
-					depthRow[col] = usDepthValue;
+					depthRow[col] = 1800;
 					maskRow[col] = 0;
 				}
 			}
@@ -583,7 +617,7 @@ void testApp::Processing()
 		// Inpaint Z-index
 		if(0.999f > fInpaintResizeScale)
 		{
-			cv::Mat kinectDepth8(DepthWidth, DepthHeight, CV_8UC1, cv::Scalar::all(0));
+			cv::Mat kinectDepth8;
 			cv::Mat kinectDepth16;
 			cv::Mat resizedDepth;
 			cv::Mat resizedMask;
@@ -598,6 +632,10 @@ void testApp::Processing()
 
 			// Inpaint Z-index values in a reduced buffer and copy them back only in the masked positions
 			ofxMatKinectDepth.convertTo(kinectDepth8, CV_8UC1, 255.0/maxVal);
+
+			//cv::Mat outResult;
+			//kinectDepth8.copyTo(outResult);
+			ofxKinectResult.setFromPixels(kinectDepth8.data, DepthWidth, DepthHeight);
 
 			int newSizeCols = ofxMatKinectDepth.cols * fInpaintResizeScale;
 			int newSizeRows = ofxMatKinectDepth.rows * fInpaintResizeScale;
@@ -664,7 +702,7 @@ void testApp::Processing()
 				float fDepth = pDepthRows[col] * fToMeters;
 				int nDepth = 0;
 
-				//if (fDepth >= gDepthRangeStartMeters || fDepth <= gDepthRangeEndMeters)
+				if (fDepth >= gDepthRangeStartMeters || fDepth <= gDepthRangeEndMeters)
 				{
 					nDepth = (int)((fDepth - gDepthRangeStartMeters) * fInvRange255);
 

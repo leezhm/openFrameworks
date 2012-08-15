@@ -10,8 +10,9 @@
  * @date	Oct. 28, 2011
  */
 /******************************************************************/
-#include "testApp.h"
+
 #include "ofxKinectNuiDraw.h"
+#include "testApp.h"
 
 //--------------------------------------------------------------
 void testApp::setup() {
@@ -82,16 +83,16 @@ void testApp::draw() {
 	// Draw video only
 	if(bDrawVideo){
 		// draw video images from kinect camera
-		videoDraw_->setDrawArea(0, 0, 1024, 768);
+		videoDraw_->setDrawArea(0.0, 0.0, 1024.0, 768.0);
 		kinect.drawVideo();
 	// Draw depth + users label only
 	}else if(bDrawDepthLabel){
 		ofEnableAlphaBlending();
 		// draw depth images from kinect depth sensor
-		depthDraw_->setDrawArea(0, 0, 1024, 768);
+		depthDraw_->setDrawArea(0.0, 0.0, 1024.0, 768.0);
 		kinect.drawDepth();
 		// draw players' label images on video images
-		labelDraw_->setDrawArea(0, 0, 1024, 768);
+		labelDraw_->setDrawArea(0.0, 0.0, 1024.0, 768.0);
 		kinect.drawLabel();
 		ofDisableAlphaBlending();
 	// Draw skeleton only
@@ -105,14 +106,14 @@ void testApp::draw() {
 	}else{
 		if(!bPlayback){
 			// draw video images from kinect camera
-			videoDraw_->setDrawArea(20, 20, 400, 300);
+			videoDraw_->setDrawArea(20.0, 20.0, 400.0, 300.0);
 			kinect.drawVideo();
 			ofEnableAlphaBlending();
 			// draw depth images from kinect depth sensor
-			depthDraw_->setDrawArea(20, 340, 400, 300);
+			depthDraw_->setDrawArea(20.0, 340.0, 400.0, 300.0);
 			kinect.drawDepth();
 			// draw players' label images on video images
-			labelDraw_->setDrawArea(20, 340, 400, 300);
+			labelDraw_->setDrawArea(20.0, 340.0, 400.0, 300.0);
 			kinect.drawLabel();
 			ofDisableAlphaBlending();
 			// draw skeleton images on video images

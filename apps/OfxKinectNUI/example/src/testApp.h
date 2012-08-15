@@ -13,9 +13,11 @@
 #pragma once
 
 #include "ofxKinectNui.h"
-#include "ofMain.h"
 #include "ofxKinectNuiPlayer.h"
 #include "ofxKinectNuiRecorder.h"
+#include "ofxKinectNuiDraw.h"
+#include "ofMain.h"
+
 
 class ofxKinectNuiDrawTexture;
 class ofxKinectNuiDrawSkeleton;

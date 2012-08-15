@@ -88,7 +88,7 @@ private:
 	ofxCvGrayscaleImage ofxCvKinectAlpha;
 
 
-	ofImage resultImage;
+	ofxCvGrayscaleImage ofxKinectResult;
 
 
 private:

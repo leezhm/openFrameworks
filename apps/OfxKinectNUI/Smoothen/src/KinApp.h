@@ -29,4 +29,6 @@ class KinApp : public ofBaseApp
 
 		ofxCvGrayscaleImage depthImage;
 		ofxCvGrayscaleImage labelImage;
+
+		ofxCvGrayscaleImage distanceImage;
 };
