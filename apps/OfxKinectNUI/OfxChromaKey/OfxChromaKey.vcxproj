@@ -263,6 +263,9 @@ if not exist "$(ProjectDir)\bin\data" mkdir  "$(ProjectDir)\bin\data"
     <ClInclude Include="..\..\..\addons\ofxKinectNui\src\kinect\nui\KinectContext.h" />
     <ClInclude Include="..\..\..\addons\ofxKinectNui\src\kinect\nui\SkeletonEngine.h" />
     <ClInclude Include="..\..\..\addons\ofxKinectNui\src\kinect\nui\SkeletonFrame.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectNui\src\kinect\nui\StaticMediaBuffer.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectNui\src\kinect\nui\WaveFileWriter.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectNui\src\kinect\nui\WaveOutput.h" />
     <ClInclude Include="..\..\..\addons\ofxKinectNui\src\ofxBase3DVideo.h" />
     <ClInclude Include="..\..\..\addons\ofxKinectNui\src\ofxKinectNuiDraw.h" />
     <ClInclude Include="..\..\..\addons\ofxKinectNui\src\ofxKinectNuiDrawInterface.h" />
@@ -280,9 +283,6 @@ if not exist "$(ProjectDir)\bin\data" mkdir  "$(ProjectDir)\bin\data"
     <ClInclude Include="..\..\..\addons\ofxOpenCv\src\ofxOpenCv.h" />
     <ClInclude Include="..\..\..\addons\ofxXmlSettings\libs\tinyxml.h" />
     <ClInclude Include="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.h" />
-    <ClInclude Include="..\src\kinect\nui\StaticMediaBuffer.h" />
-    <ClInclude Include="..\src\kinect\nui\WaveFileWriter.h" />
-    <ClInclude Include="..\src\kinect\nui\WaveOutput.h" />
     <ClInclude Include="..\..\..\addons\ofxKinectNui\src\ofxKinectNui.h" />
     <ClInclude Include="..\..\..\addons\ofxKinectNui\src\ofxKinectNuiPlayer.h" />
     <ClInclude Include="..\..\..\addons\ofxKinectNui\src\ofxKinectNuiRecorder.h" />

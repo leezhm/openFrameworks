@@ -1,6 +1,8 @@
 #pragma once
 
 #include "ofxKinectNui.h"
+#include "ofxKinectNuiDraw.h"
+
 #include "ofMain.h"
 #include "ofxOpenCv.h"
 #include "ofxXmlSettings.h"
@@ -33,6 +35,8 @@ private:
 private:
 	
 	ofxKinectNui KinectSensor;
+
+	ofxKinectNuiDrawSkeleton * skeltonDraw;
 
 	// Color Image 
 	ofxCvColorImage ColorImage;
@@ -118,5 +122,8 @@ private:
 
 	ofxFloatSlider AlphaErodeDilateScaleSlider;
 	ofxFloatSlider MedianFilterAlphaScaleSlider;
+
+	private:
+		ofPoint skeleton[6][20];
 
 };

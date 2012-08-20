@@ -14,22 +14,22 @@
             <DEPTHNONUSER>1.8075</DEPTHNONUSER>
         </INPAINT>
         <DEPTH>
-            <START>1.407</START>
+            <START>1.406</START>
             <END>2.4</END>
         </DEPTH>
         <MEDIAN>
             <DEPTHSIZE>7</DEPTHSIZE>
             <ALPHASIZE>7</ALPHASIZE>
-            <ALPHASCALE>64</ALPHASCALE>
+            <ALPHASCALE>48.4</ALPHASCALE>
         </MEDIAN>
         <ALPHA>
             <BLURSIZE>7</BLURSIZE>
             <ERODESTEP>5</ERODESTEP>
             <DILATESTEP>2</DILATESTEP>
             <EDKERNELSIZE>5</EDKERNELSIZE>
-            <OFFSETX>-1</OFFSETX>
+            <OFFSETX>-3</OFFSETX>
             <OFFSETY>0</OFFSETY>
-            <EDSCALE>18</EDSCALE>
+            <EDSCALE>24.4</EDSCALE>
         </ALPHA>
     </PROCESSING>
 </KINECT>

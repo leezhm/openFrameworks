@@ -1,3 +1,5 @@
+#include "ofxKinectNuiDraw.h"
+
 #include "testApp.h"
 
 #include <iostream>
@@ -204,6 +206,14 @@ void testApp::setup()
 	gui.add(AlphaErodeDilateScaleSlider.setup("AlphaErodeDilateScale", xmlSetting.getValue("KINECT:PROCESSING:ALPHA:EDSCALE", 40), 10, 90));
 	gui.add(MedianFilterAlphaScaleSlider.setup("MedianFilterAlphaScale", xmlSetting.getValue("KINECT:PROCESSING:MEDIAN:ALPHASCALE", 40), 10, 90));
 
+
+	//////////////////////////////////////////////////////////////////////////
+	skeltonDraw = new ofxKinectNuiDrawSkeleton();
+	KinectSensor.setSkeletonDrawer(skeltonDraw);
+
+	//skeleton = new ofPoint[6][20];
+
+
 	// Do some testing
 	//////////////////////////////////////////////////////////////////////////
 	////cv::Mat doMat(6, 8, CV_16UC1, cv::Scalar::all(8));
@@ -303,6 +313,8 @@ void testApp::update()
 		ofxCvKinectMask.set(128);
 		ofxCvKinectAlpha.set(128);
 
+		KinectSensor.getSkeletonPoints(skeleton);
+
 
 		ColorPlayer.setFromPixels(KinectSensor.getCalibratedVideoPixels());
 
@@ -323,6 +335,8 @@ void testApp::update()
 		////		}
 		////	}
 		////}
+
+		//KinectSensor.getSkeletonPoints(
 	}
 }
 
@@ -354,6 +368,10 @@ void testApp::draw()
 	ofxCvKinectAlpha.draw(1280, 520, 640, 480);
 
 	ofxKinectResult.draw(0, 520, 640, 480);
+
+	// Draw skeleton
+	KinectSensor.drawSkeleton(0, 20);
+
 
 	// draw title
 	ofSetColor(255, 255, 255);
@@ -582,8 +600,6 @@ void testApp::Processing()
 
 	cv::Mat ofxMatKinectProcessed;
 
-	//unsigned char * ofxKinectAlphaPixels = new unsigned char[DepthWidth * 4 * DepthHeight];
-
 	if(0.0001f < fInpaintRadius)
 	{
 		// Dilate users buffer
@@ -606,9 +622,9 @@ void testApp::Processing()
 
 			for (int col = 0; col < ofxMatKinectUsers.cols; ++ col)
 			{
-				if(0 != maskRow[col] &&0 != userRow[col])
+				if(0 != maskRow[col] && 0 != userRow[col])
 				{
-					depthRow[col] = 1800;
+					depthRow[col] = usDepthValue;
 					maskRow[col] = 0;
 				}
 			}
@@ -853,5 +869,12 @@ void testApp::Processing()
 				ColorPlayer.getPixelsRef().setColor(wIndex, hIndex, backgroundImage.getColor(wIndex, hIndex));
 			}
 		}
+
+		alpha = NULL;
 	}
+
+	//ofxCvKinectUsers.clear();
+	//ofxCvKinectRGB.clear();
+	//ofxCvKinectMask.clear();
+	//ofxCvKinectDepth.clear();
 }
