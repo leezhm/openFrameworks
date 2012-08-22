@@ -77,6 +77,12 @@ void testApp::setup()
 	// Set Frame Rate
 	ofSetFrameRate(60);
 
+	leftSwipeTime = 0;
+	leftRaiseTime = 0;
+
+	rightSwipeTime = 0;
+	rightRaiseTime = 0;
+
 	// Init the kinect sensor
 	ofxKinectNui::InitSetting setting;
 	setting.grabAudio = false;
@@ -211,8 +217,11 @@ void testApp::setup()
 	skeltonDraw = new ofxKinectNuiDrawSkeleton();
 	KinectSensor.setSkeletonDrawer(skeltonDraw);
 
-	//skeleton = new ofPoint[6][20];
-
+	for (int i = 0; i < 6; ++ i)
+	{
+		ofPoint p(0, 0, 0);
+		skeletonDatas[i] = &p;
+	}
 
 	// Do some testing
 	//////////////////////////////////////////////////////////////////////////
@@ -298,13 +307,18 @@ void testApp::update()
 		// user Image
 		userImage.setFromPixels(KinectSensor.getLabelPixelsCv(0));
 
+		//////////////////////////////////////////////////////////////////////////
+		//
+		//
+		//ofxCvGrayscaleImage source;
+		//source.allocate(ColorWidth, ColorHeight);
+		//source = ColorImage;
 
-		//////////////////////////////////////////////////////////////////////////
-		//
-		//	Copy data
-		//
-		//////////////////////////////////////////////////////////////////////////
-		//ofxCvKinectDepth.setFromPixels(KinectSensor.getDistancePixels().getPixels(), ColorWidth, ColorHeight);
+		////userImage = ColorImage;
+		////userImage.mirror(false, true);
+		////std::string qrString = qrCoder.findQR(userImage);
+
+		////std::cout<<"QR Code = "<<qrString<<std::endl;
 
 		// the ofxCvGrayscaleImage had override the operator '='
 		ofxCvKinectUsers = userImage;
@@ -313,8 +327,8 @@ void testApp::update()
 		ofxCvKinectMask.set(128);
 		ofxCvKinectAlpha.set(128);
 
-		KinectSensor.getSkeletonPoints(skeleton);
-
+		KinectSensor.getSkeletonPoints(skeletonDatas);
+		GestureGenerator();
 
 		ColorPlayer.setFromPixels(KinectSensor.getCalibratedVideoPixels());
 
@@ -335,8 +349,6 @@ void testApp::update()
 		////		}
 		////	}
 		////}
-
-		//KinectSensor.getSkeletonPoints(
 	}
 }
 
@@ -347,7 +359,7 @@ void testApp::draw()
 	ofBackgroundGradient(ofColor::white, ofColor::gray);
 
 	ofEnableAlphaBlending();
-	//ColorImage.draw(0, 10, 640, 480);
+	ColorImage.draw(0, 10, 640, 480);
 
 	//ColorPlayer.flagImageChanged();
 	ColorPlayer.draw(1280, 20, 640, 480);
@@ -355,7 +367,7 @@ void testApp::draw()
 	ofDisableAlphaBlending();
 
 	// depth Image
-	depthImage.draw(0, 20, DepthWidth, DepthHeight);
+	//depthImage.draw(0, 20, DepthWidth, DepthHeight);
 
 	// user image
 	userImage.draw(640, 20, DepthWidth, DepthHeight);
@@ -370,7 +382,7 @@ void testApp::draw()
 	ofxKinectResult.draw(0, 520, 640, 480);
 
 	// Draw skeleton
-	KinectSensor.drawSkeleton(0, 20);
+	KinectSensor.drawSkeleton(320, 320);
 
 
 	// draw title
@@ -539,9 +551,25 @@ void testApp::keyPressed (int key)
 
 
 			xmlSetting.saveFile("config.xml");
+
+			break;
 		}
-		
-		break;
+	case 'Q':
+	case 'q':
+		{
+			//////////////////////////////////////////////////////////////////////////
+			//	QR Code
+			ofxCvGrayscaleImage source;
+			source.allocate(ColorWidth, ColorHeight);
+			source = ColorImage;
+			
+			source.mirror(false, true);
+			std::string qrString = qrCoder.findQR(userImage);
+
+			std::cout<<"QR Code = "<<qrString<<std::endl;
+
+			break;
+		}
 	}
 }
 
@@ -877,4 +905,146 @@ void testApp::Processing()
 	//ofxCvKinectRGB.clear();
 	//ofxCvKinectMask.clear();
 	//ofxCvKinectDepth.clear();
+}
+
+
+void testApp::GestureGenerator()
+{
+	const ofPoint * playerSkeleton = NULL;
+
+	for (int i = 0; i < 6; ++ i)
+	{
+		if((int)skeletonDatas[i][0].z > 0 && (int)skeletonDatas[i][0].z < 40000)
+		{
+			//std::cout<<i<<" ("<<(int)skeletonDatas[i][0].x<<", "<<(int)skeletonDatas[i][0].y<<", "<<(int)skeletonDatas[i][0].z<<")"<<std::endl;
+			//for (int j = 0; j < 20; ++ j)
+			//{
+			//	std::cout<<skeletonDatas[i][j]<<", ";
+			//}
+
+
+			//cout<<"HEAD -> "<<(int)skeletonDatas[i][NUI_SKELETON_POSITION_HEAD].x<<" "<<(int)skeletonDatas[i][NUI_SKELETON_POSITION_HEAD].y<<" ";
+			//
+			//cout<<"HIP CENTER -> "<<(int)skeletonDatas[i][NUI_SKELETON_POSITION_HIP_CENTER].x<<" "<<(int)skeletonDatas[i][NUI_SKELETON_POSITION_HIP_CENTER].y<<" ";
+
+			if(NULL == playerSkeleton)
+			{
+				playerSkeleton = skeletonDatas[i];
+			}
+			else
+			{
+				if(playerSkeleton[NUI_SKELETON_POSITION_SHOULDER_CENTER].z > skeletonDatas[i][NUI_SKELETON_POSITION_SHOULDER_CENTER].z)
+				{
+					playerSkeleton = skeletonDatas[i];
+				}
+			}
+		}
+	}
+
+	if(NULL == playerSkeleton) return;
+	
+	int HeadX = (int)playerSkeleton[NUI_SKELETON_POSITION_HEAD].x;
+	int HeadY = (int)playerSkeleton[NUI_SKELETON_POSITION_HEAD].y;
+	int SpineX = (int)playerSkeleton[NUI_SKELETON_POSITION_SPINE].x;
+	int SpineY = (int)playerSkeleton[NUI_SKELETON_POSITION_SPINE].y;
+
+	int leftHandX = (int)playerSkeleton[NUI_SKELETON_POSITION_HAND_LEFT].x;
+	int leftHandY = (int)playerSkeleton[NUI_SKELETON_POSITION_HAND_LEFT].y;
+	int leftWristX = (int)playerSkeleton[NUI_SKELETON_POSITION_WRIST_LEFT].x;
+	int leftWristY = (int)playerSkeleton[NUI_SKELETON_POSITION_WRIST_LEFT].y;
+	int leftElbowX = (int)playerSkeleton[NUI_SKELETON_POSITION_ELBOW_LEFT].x;
+	int leftElbowY = (int)playerSkeleton[NUI_SKELETON_POSITION_ELBOW_LEFT].y;
+	int leftShoulderX = (int)playerSkeleton[NUI_SKELETON_POSITION_SHOULDER_LEFT].x;
+	int leftShoulderY = (int)playerSkeleton[NUI_SKELETON_POSITION_SHOULDER_LEFT].y;
+
+	if(0 == leftSwipeTime && 0 < (leftWristX - leftHandX))
+	{
+		leftSwipeTime = ofGetSystemTime();
+	}
+
+	if((ofGetSystemTime() - leftSwipeTime) < 1500)
+	{
+
+		if(0 < (leftHandX-leftWristX) && 0 < (leftWristX-leftShoulderX) && 0 < (leftElbowY - HeadY) && 0 < (SpineY - leftElbowY))
+		{
+			std::cout<<"H-W "<<leftHandX-leftWristX<<"  W-S "<<leftWristX-leftShoulderX<<std::endl;
+			std::cout<<"Left Swipe ....\n";
+			leftSwipeTime = 0;
+		}
+	}
+	else
+	{
+		leftSwipeTime = 0;
+	}
+
+	int rightHandX = (int)playerSkeleton[NUI_SKELETON_POSITION_HAND_RIGHT].x;
+	int rightHandY = (int)playerSkeleton[NUI_SKELETON_POSITION_HAND_RIGHT].y;
+	int rightWristX = (int)playerSkeleton[NUI_SKELETON_POSITION_WRIST_RIGHT].x;
+	int rightWristY = (int)playerSkeleton[NUI_SKELETON_POSITION_WRIST_RIGHT].y;
+	int rightElbowX = (int)playerSkeleton[NUI_SKELETON_POSITION_ELBOW_RIGHT].x;
+	int rightElbowY = (int)playerSkeleton[NUI_SKELETON_POSITION_ELBOW_RIGHT].y;
+	int rightShoulderX = (int)playerSkeleton[NUI_SKELETON_POSITION_SHOULDER_RIGHT].x;
+	int rightShoulderY = (int)playerSkeleton[NUI_SKELETON_POSITION_SHOULDER_RIGHT].y;
+
+	if(0 == rightSwipeTime && 0 < (rightHandX - rightWristX))
+	{
+		rightSwipeTime = ofGetSystemTime();
+	}
+
+	if((ofGetSystemTime() - rightSwipeTime) < 1500)
+	{
+
+		if(0 < (rightWristX - rightHandX) && 0 < (rightShoulderX - rightWristX) &&  0 < (rightElbowY - HeadY) && 0 < (SpineY - rightElbowY))
+		{
+			std::cout<<"H-W "<<rightWristX - rightHandX<<"  W-S "<<rightShoulderX - rightWristX<<std::endl;
+			std::cout<<"Right Swipe ....\n";
+			rightSwipeTime = 0;
+		}
+	}
+	else
+	{
+		rightSwipeTime = 0;
+	}
+
+
+	if(0 == rightRaiseTime && 0 < (rightHandY - rightWristY))
+	{
+		rightRaiseTime = ofGetSystemTime();
+	}
+
+	if((ofGetSystemTime() - rightRaiseTime) < 1500)
+	{
+
+		if(0 < (rightWristY - rightHandY) && 0 < (rightShoulderY - rightWristY) && 0 < (rightHandX - HeadX))
+		{
+			std::cout<<"H-W "<<rightWristY - rightHandY<<"  W-S "<<rightShoulderY - rightWristY<<std::endl;
+			std::cout<<"Right Raise ....\n";
+			rightRaiseTime = 0;
+		}
+	}
+	else
+	{
+		rightRaiseTime = 0;
+	}
+
+
+	if(0 == leftRaiseTime && 0 < (leftHandY - leftWristY))
+	{
+		leftRaiseTime = ofGetSystemTime();
+	}
+
+	if((ofGetSystemTime() - leftRaiseTime) < 1500)
+	{
+
+		if(0 < (leftWristY - leftHandY) && 0 < (leftShoulderY - leftWristY) && 0 < (HeadX - leftHandX))
+		{
+			std::cout<<"H-W "<<leftWristY - leftHandY<<"  W-S "<<leftShoulderY - leftWristY<<std::endl;
+			std::cout<<"Left Raise ....\n";
+			leftRaiseTime = 0;
+		}
+	}
+	else
+	{
+		leftRaiseTime = 0;
+	}
 }

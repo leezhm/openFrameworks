@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ofxQRDecoder.h"
+
 #include "ofxKinectNui.h"
 #include "ofxKinectNuiDraw.h"
 
@@ -31,6 +33,8 @@ private:
 	void MappingColorPlayer(ofImage & player);
 
 	void Processing();
+
+	void GestureGenerator();
 
 private:
 	
@@ -123,7 +127,15 @@ private:
 	ofxFloatSlider AlphaErodeDilateScaleSlider;
 	ofxFloatSlider MedianFilterAlphaScaleSlider;
 
-	private:
-		ofPoint skeleton[6][20];
+private:
+	const ofPoint * skeletonDatas[6];
 
+
+	ofxQRDecoder qrCoder;
+
+	unsigned long leftSwipeTime;
+	unsigned long leftRaiseTime;
+
+	unsigned long rightSwipeTime;
+	unsigned long rightRaiseTime;
 };

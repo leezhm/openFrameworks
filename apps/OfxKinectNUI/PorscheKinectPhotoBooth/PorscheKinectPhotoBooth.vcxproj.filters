@@ -91,35 +91,23 @@
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxToggle.cpp">
       <Filter>addons\ofxGui\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\bitstream.cpp">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\codedata.cpp">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\container.cpp">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\ecidecoder.cpp">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\formatinfo.cpp">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\galois.cpp">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\imagereader.cpp">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\libdecodeqr.cpp">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\testApp.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxJson\src\ofxJSONElement.cpp">
+      <Filter>addons\ofxJson\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxJson\lib\src\lib_json\json_reader.cpp">
+      <Filter>addons\ofxJson\lib\src\lib_json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxJson\lib\src\lib_json\json_value.cpp">
+      <Filter>addons\ofxJson\lib\src\lib_json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\addons\ofxJson\lib\src\lib_json\json_writer.cpp">
+      <Filter>addons\ofxJson\lib\src\lib_json</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -248,42 +236,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\addons\ofxKinectNui\src\kinect\nui\WaveOutput.h">
       <Filter>addons\ofxKinectNui\src\kinect\nui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\bitstream.h">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\codedata.h">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\container.h">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\decodeqr.h">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\ecidecoder.h">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\formatinfo.h">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\galois.h">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\imagereader.h">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\qrerror.h">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\qrtypes.h">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\version.h">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\addons\ofxQRDecoder\src\ofxQRDecoder.h">
-      <Filter>addons\ofxQRDecoder\src</Filter>
     </ClInclude>
     <ClInclude Include="src\testApp.h">
       <Filter>src</Filter>
@@ -657,8 +609,68 @@
     <ClInclude Include="..\..\..\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\wobble_suppression.hpp">
       <Filter>addons\ofxOpenCv\libs\opencv\include\opencv2\videostab</Filter>
     </ClInclude>
-    <ClInclude Include="Gesture.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\..\..\addons\ofxJson\src\ofxJSONElement.h">
+      <Filter>addons\ofxJson\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxJson\lib\src\lib_json\json_batchallocator.h">
+      <Filter>addons\ofxJson\lib\src\lib_json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxJson\lib\include\json\autolink.h">
+      <Filter>addons\ofxJson\lib\include\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxJson\lib\include\json\config.h">
+      <Filter>addons\ofxJson\lib\include\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxJson\lib\include\json\features.h">
+      <Filter>addons\ofxJson\lib\include\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxJson\lib\include\json\forwards.h">
+      <Filter>addons\ofxJson\lib\include\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxJson\lib\include\json\json.h">
+      <Filter>addons\ofxJson\lib\include\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxJson\lib\include\json\reader.h">
+      <Filter>addons\ofxJson\lib\include\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxJson\lib\include\json\value.h">
+      <Filter>addons\ofxJson\lib\include\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxJson\lib\include\json\writer.h">
+      <Filter>addons\ofxJson\lib\include\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxZbar\lib\Zbar\include\zbar.h">
+      <Filter>addons\ofxZbar\lib\Zbar\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxZbar\lib\Zbar\include\zbar\Decoder.h">
+      <Filter>addons\ofxZbar\lib\Zbar\include\zbar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxZbar\lib\Zbar\include\zbar\Exception.h">
+      <Filter>addons\ofxZbar\lib\Zbar\include\zbar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxZbar\lib\Zbar\include\zbar\Image.h">
+      <Filter>addons\ofxZbar\lib\Zbar\include\zbar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxZbar\lib\Zbar\include\zbar\ImageScanner.h">
+      <Filter>addons\ofxZbar\lib\Zbar\include\zbar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxZbar\lib\Zbar\include\zbar\Processor.h">
+      <Filter>addons\ofxZbar\lib\Zbar\include\zbar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxZbar\lib\Zbar\include\zbar\Scanner.h">
+      <Filter>addons\ofxZbar\lib\Zbar\include\zbar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxZbar\lib\Zbar\include\zbar\Symbol.h">
+      <Filter>addons\ofxZbar\lib\Zbar\include\zbar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxZbar\lib\Zbar\include\zbar\Video.h">
+      <Filter>addons\ofxZbar\lib\Zbar\include\zbar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxZbar\lib\Zbar\include\zbar\Window.h">
+      <Filter>addons\ofxZbar\lib\Zbar\include\zbar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\addons\ofxZbar\src\ofxZbar.h">
+      <Filter>addons\ofxZbar\src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -700,18 +712,6 @@
     </Filter>
     <Filter Include="addons\ofxGui\src">
       <UniqueIdentifier>{376ea764-dc4c-482f-a259-8718566a7acf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="addons\ofxQRDecoder">
-      <UniqueIdentifier>{c2f96142-590f-4b02-837a-43e957661ea6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="addons\ofxQRDecoder\src">
-      <UniqueIdentifier>{74eae4b7-f202-4b64-8110-d72b9a5dc549}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="addons\ofxQRDecoder\lib">
-      <UniqueIdentifier>{9573885b-aae6-4676-a6e1-c4ce762ca7b6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="addons\ofxQRDecoder\lib\libdecodeqr">
-      <UniqueIdentifier>{3bd10ca1-fdec-4d92-acfc-2f36aefc8adc}</UniqueIdentifier>
     </Filter>
     <Filter Include="addons\ofxOpenCv\libs">
       <UniqueIdentifier>{0343d4e8-622a-4602-9b91-189fcc630276}</UniqueIdentifier>
@@ -785,10 +785,55 @@
     <Filter Include="addons\ofxOpenCv\libs\opencv\include\opencv2\videostab">
       <UniqueIdentifier>{5d50a536-008c-4883-842f-4c1b9ed39512}</UniqueIdentifier>
     </Filter>
+    <Filter Include="addons\ofxJson">
+      <UniqueIdentifier>{97024904-07ff-46b5-a88d-a923589a5035}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxJson\src">
+      <UniqueIdentifier>{57f4f4f2-05a5-4fa1-817c-d5f77369c300}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxJson\lib">
+      <UniqueIdentifier>{ce710aa1-6563-445f-a707-3fdfc32dd019}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxJson\lib\src">
+      <UniqueIdentifier>{a116d215-9305-48a4-9d17-d6b37d909785}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxJson\lib\src\lib_json">
+      <UniqueIdentifier>{95f932db-a85f-46b3-8484-b644568e7aad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxJson\lib\include">
+      <UniqueIdentifier>{ccacbbc4-41c0-4720-9b3d-72b511cc3a8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxJson\lib\include\json">
+      <UniqueIdentifier>{d345fcdd-096f-47e0-ac23-e1b8d7e675e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxZbar">
+      <UniqueIdentifier>{c6033daa-56a7-450f-89bb-421e18f5a3c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxZbar\src">
+      <UniqueIdentifier>{76e3727c-d8d1-469c-bc92-238981fc6941}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxZbar\lib">
+      <UniqueIdentifier>{c429fc9c-6c8e-4ddd-bee9-096620ef8adb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxZbar\lib\Zbar">
+      <UniqueIdentifier>{9bb538ca-2b2c-44f7-b636-bb9e7048247d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxZbar\lib\Zbar\include">
+      <UniqueIdentifier>{1ff8ff59-b0e1-4b55-a5cb-0c6964b6e2a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxZbar\lib\Zbar\include\zbar">
+      <UniqueIdentifier>{aec48aa5-aabd-4453-9c45-424b87ff0b0a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\addons\ofxQRDecoder\lib\libdecodeqr\README">
-      <Filter>addons\ofxQRDecoder\lib\libdecodeqr</Filter>
+    <None Include="..\..\..\addons\ofxJson\lib\src\lib_json\json_internalarray.inl">
+      <Filter>addons\ofxJson\lib\src\lib_json</Filter>
+    </None>
+    <None Include="..\..\..\addons\ofxJson\lib\src\lib_json\json_internalmap.inl">
+      <Filter>addons\ofxJson\lib\src\lib_json</Filter>
+    </None>
+    <None Include="..\..\..\addons\ofxJson\lib\src\lib_json\json_valueiterator.inl">
+      <Filter>addons\ofxJson\lib\src\lib_json</Filter>
     </None>
   </ItemGroup>
 </Project>
